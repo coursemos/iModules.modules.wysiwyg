@@ -1,1 +1,1 @@
-# iModules.modules.wyswiyg
+# iModules.modules.wysiwyg
