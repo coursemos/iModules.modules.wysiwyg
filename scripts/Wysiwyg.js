@@ -3,11 +3,16 @@
  *
  * 위지윅에디터모듈 자바스크립트 클래스를 정의한다.
  *
- * @file /modules/wysiwyg/scripts/ModuleWysiwyg.php
+ * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
  * @modified 2022. 2. 9.
  */
-class ModuleWysiwyg extends Module {
-	
-}
+Modules.set(class wysiwyg extends Module {
+    init() {
+        console.log('Editor INIT!', this.dom);
+        if (this.dom !== null) {
+            console.log(this.dom);
+        }
+    }
+});
