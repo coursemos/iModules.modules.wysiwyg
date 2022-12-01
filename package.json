@@ -1,0 +1,27 @@
+{
+    "id": "tools.moimz.imodules.modules.wysiwyg",
+    "icon": "xi-crown",
+    "title": {
+        "ko": "위지윅에디터"
+    },
+    "version": "4.0.0",
+    "description": {
+        "ko": "위지윅에디터 모듈입니다."
+    },
+    "author": {
+        "name": "Arzz",
+        "email": "arzz@arzz.com"
+    },
+    "homepage": "https://www.imodules.io",
+    "versionChecker": "https://api.moimz.com/download/latest",
+    "dependencies": {
+        "core": "4.0.0"
+    },
+    "language": "ko",
+    "configs": {
+        "templet": {
+            "type": "templet",
+            "default": "default"
+        }
+    }
+}
