@@ -1,6 +1,6 @@
 {
     "id": "tools.moimz.imodules.modules.wysiwyg",
-    "icon": "xi-crown",
+    "icon": "xi xi-pen-point",
     "title": {
         "ko": "위지윅에디터"
     },
@@ -19,8 +19,8 @@
     },
     "language": "ko",
     "configs": {
-        "templet": {
-            "type": "templet",
+        "template": {
+            "type": "template",
             "default": "default"
         }
     }
