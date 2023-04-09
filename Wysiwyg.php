@@ -1,21 +1,15 @@
 <?php
 /**
- * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
+ * 이 파일은 아이모듈 위지윅에디터모듈의 일부입니다. (https://www.imodules.io)
  *
- * 위지윅클래스 클래스를 정의한다.
+ * 위지윅에디터모듈 클래스를 정의한다.
  *
  * @file /modules/wysiwyg/Wysiwyg.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2022. 11. 9.
+ * @modified 2023. 4. 10.
  */
 namespace modules\wysiwyg;
-use \Html;
-use \Modules;
-use \ErrorData;
-use \ErrorHandler;
-use \Request;
-use \Cache;
 class Wysiwyg extends \Module
 {
     /**
@@ -34,9 +28,9 @@ class Wysiwyg extends \Module
     private string $_name;
 
     /**
-     * @var object $_templet 위지윅에디터 템플릿 설정
+     * @var object $_template 위지윅에디터 템플릿 설정
      */
-    private object $_templet;
+    private object $_template;
 
     /**
      * @var string $_width 위지윅에디터 너비
@@ -69,10 +63,9 @@ class Wysiwyg extends \Module
     private bool $_disabled = false;
 
     /**
-     * @var string $_id 위지윅에디터 고유값
+     * @var \modules\attachment\Attachment $_attachment 첨부파일모듈 클래스
      */
-    //    private ?ModuleAttachment $_attachment = null;
-    //    private array $_hasLanguages = [];
+    private ?\modules\attachment\Attachment $_attachment = null;
 
     /**
      * 위지윅에디터를 호출한 컨텍스트를 설정한다.
@@ -127,7 +120,7 @@ class Wysiwyg extends \Module
 
         $this->_id = null;
         $this->_name = null;
-        $this->_templet = null;
+        $this->_template = null;
         $this->_placeholder = '';
 
         //$this->_title = null;
@@ -169,7 +162,7 @@ class Wysiwyg extends \Module
 */
         //$this->IM->loadWebFont('FontAwesome');
         //		Html::script($this->getDir().'/scripts/wysiwyg.js.php');
-        //		Html::style($this->getDir().'//styles/wysiwyg.css.php?templet='.$this->_);
+        //		Html::style($this->getDir().'//styles/wysiwyg.css.php?template='.$this->_);
         //$this->loadCodeMirror();
     }
 
