@@ -17,11 +17,5 @@
     "dependencies": {
         "core": "4.0.0"
     },
-    "language": "ko",
-    "configs": {
-        "template": {
-            "type": "template",
-            "default": "default"
-        }
-    }
+    "language": "ko"
 }
