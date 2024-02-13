@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 9.
+ * @modified 2024. 2. 14.
  */
 var modules;
 (function (modules) {
@@ -121,10 +121,31 @@ var modules;
                         this.uploader = attachment.getUploader(Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]'));
                         this.uploader.setEditor(this);
                     }
-                    $editor.on('froalaEditor.image.beforeUpload', (e, editor, files, $image_placeholder) => {
-                        const images = this.uploader.add(files);
-                        for (const image of images) {
-                            const $img = this.addImagePlaceholder(image, editor, $image_placeholder);
+                    this.uploader.addEvent('update', (file) => {
+                        const selector = 'img[data-index="' + file.index + '"], a[data-index="' + file.index + '"]';
+                        const $placeholder = this.editor.$(selector, this.editor.get().$el);
+                        if ($placeholder.length == 1) {
+                            $placeholder.attr('data-attachment-id', file.attachment.id);
+                            if (file.status == 'COMPLETE') {
+                                if ($placeholder.is('img') == true) {
+                                    $placeholder.attr('src', file.attachment.view);
+                                    this.editor.get().image.insert(file.attachment.view, false, {
+                                        'attachment-id': file.attachment.id,
+                                    }, $placeholder);
+                                }
+                                else {
+                                    $placeholder.replaceWith(this.getFileLink(file));
+                                }
+                            }
+                        }
+                    });
+                    $editor.on('froalaEditor.image.beforeUpload', (_e, editor, files, $image_placeholder) => {
+                        if (files.length == 0) {
+                            return false;
+                        }
+                        const attachments = this.uploader.add(files);
+                        for (const attachment of attachments) {
+                            const $img = this.addImagePlaceholder(attachment, editor, $image_placeholder);
                             $img.addClass('fr-uploading');
                             if ($img.next().is('br')) {
                                 $img.next().remove();
@@ -134,17 +155,21 @@ var modules;
                         }
                         return false;
                     });
-                    this.uploader.addEvent('update', (file) => {
-                        const $placeholder = this.editor.$('img[data-index="' + file.index + '"]', this.editor.get().$el);
-                        if ($placeholder.length == 1) {
-                            $placeholder.attr('data-id', file.attachment.id);
-                            if (file.status == 'COMPLETE') {
-                                $placeholder.attr('src', file.attachment.view);
-                                this.editor.get().image.insert(file.attachment.view, false, {
-                                    'id': file.attachment.id,
-                                }, $placeholder);
-                            }
+                    $editor.on('froalaEditor.file.beforeUpload', (_e, editor, files) => {
+                        if (files.length == 0) {
+                            return false;
                         }
+                        editor.edit.off();
+                        editor.events.focus(true);
+                        editor.selection.restore();
+                        const attachments = this.uploader.add(files);
+                        for (const attachment of attachments) {
+                            editor.html.insert(this.getFileLink(attachment));
+                            editor.placeholder.refresh();
+                            editor.popups.hideAll();
+                            editor.edit.on();
+                        }
+                        return false;
                     });
                 });
             }
@@ -157,17 +182,72 @@ var modules;
                 return this.id;
             }
             /**
+             * 에디터에 포함된 업로더를 가져온다.
+             *
+             * @return {modules.attachment.Uploader} uploader
+             */
+            getUploader() {
+                return this.uploader;
+            }
+            /**
+             * 파일 다운로드 링크 HTML 을 가져온다.
+             *
+             * @param {modules.attachment.Uploader.File} file
+             * @return {string} html
+             */
+            getFileLink(file) {
+                const attributes = {
+                    src: null,
+                    'data-attachment-id': file.attachment.id ?? null,
+                    'data-module': 'attachment',
+                    download: null,
+                };
+                if (file.status == 'COMPLETE') {
+                    attributes.src = file.attachment.download;
+                    attributes.download = file.attachment.name;
+                }
+                else {
+                    attributes.index = file.index.toString();
+                }
+                const $link = Html.create('a', attributes);
+                $link.append(Html.create('i', { 'data-type': file.attachment.type, 'data-extension': file.attachment.extension }, file.attachment.extension));
+                $link.append(Html.create('b', null, file.attachment.name));
+                $link.append(Html.create('small', null, Format.size(file.attachment.size)));
+                return $link.toHtml();
+            }
+            /**
              * 파일을 삽입한다.
              *
              * @param {modules.attachment.Uploader.File} file
              */
             insertFile(file) {
-                console.log('insertFile', file, ['image', 'svg', 'icon'].includes(file.attachment.type));
                 if (['image', 'svg', 'icon'].includes(file.attachment.type) == true) {
                     this.editor.get().image.insert(file.attachment.view, false, {
-                        'id': file.attachment.id,
+                        'attachment-id': file.attachment.id,
                     });
                 }
+                else {
+                    this.editor.get().html.insert(this.getFileLink(file));
+                }
+            }
+            /**
+             * 에디터 콘텐츠 내용을 가져온다.
+             *
+             * @return {string} content
+             */
+            getContent() {
+                if (this.editor.$get().froalaEditor('codeView.isActive') === true) {
+                    this.editor.$get().froalaEditor('codeView.toggle');
+                }
+                return this.editor.$get().froalaEditor('html.get');
+            }
+            /**
+             * 첨부파일을 가져온다.
+             *
+             * @return {string[]} attachment_ids - 첨부파일 고유값
+             */
+            getAttachments() {
+                return this.uploader.getValue();
             }
             /**
              * 이미지를 업로드하고 있는 도중 에디터에 업로드중인 이미지의 Placeholder 를 추가한다.
@@ -177,7 +257,7 @@ var modules;
              */
             addImagePlaceholder(image, editor, $image_placeholder) {
                 if ($image_placeholder) {
-                    $image_placeholder.attr('data-id', image.attachment.id);
+                    $image_placeholder.attr('data-attachment-id', image.attachment.id);
                     $image_placeholder.attr('data-index', image.index);
                     editor.edit.on();
                     editor.undo.saveStep();
@@ -188,7 +268,7 @@ var modules;
                 else {
                     const $image = Html.create('img', {
                         src: image.attachment.view,
-                        'data-id': image.attachment.id,
+                        'data-attachment-id': image.attachment.id,
                         'data-index': image.index.toString(),
                     });
                     const $img = this.editor.$($image.getEl());
