@@ -7,7 +7,7 @@
  * @file /modules/wysiwyg/classes/Editor.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 9.
+ * @modified 2024. 2. 14.
  */
 namespace modules\wysiwyg;
 class Editor
@@ -91,6 +91,18 @@ class Editor
     public function setName(string $name): \modules\wysiwyg\Editor
     {
         $this->_name = $name;
+        return $this;
+    }
+
+    /**
+     * 위지윅에디터 본문내용을 설정한다.
+     *
+     * @param string $content 본문내용
+     * @return \modules\wysiwyg\Editor $this
+     */
+    public function setContent(string $content): \modules\wysiwyg\Editor
+    {
+        $this->_content = $content;
         return $this;
     }
 
@@ -190,12 +202,16 @@ class Editor
             'data-role' => 'editor',
             'data-width' => $this->_width,
             'data-height' => $this->_height,
+            'data-placeholder' => $this->_placeholder ?? '',
+            'data-required' => $this->_required == true ? 'true' : 'false',
+            'data-disabled' => $this->_disabled == true ? 'true' : 'false',
         ];
         if ($this->_maxHeight !== null) {
             $properties['data-max-height'] = $this->_maxHeight;
         }
-        if ($this->getUploader()?->getId() !== null) {
-            $properties['data-uploader-id'] = $this->getUploader()?->getId();
+        if ($this->getUploader() !== null) {
+            $properties['data-uploader-id'] = $this->getUploader()->getId();
+            $properties['data-uploader-name'] = $this->getUploader()->getName();
         }
 
         $textarea = \Html::element('textarea', $properties, $this->_content);
