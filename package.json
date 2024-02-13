@@ -20,7 +20,7 @@
     "language": "ko",
     "configs": {
         "iframe": {
-            "type": "string",
+            "type": "textarea",
             "label": {
                 "ko": "허용할 iframe 주소"
             },
