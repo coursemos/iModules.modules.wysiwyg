@@ -17,5 +17,14 @@
     "dependencies": {
         "core": "4.0.0"
     },
-    "language": "ko"
+    "language": "ko",
+    "configs": {
+        "iframe": {
+            "type": "string",
+            "label": {
+                "ko": "허용할 iframe 주소"
+            },
+            "default": "www.youtube.com\nplayer.vimeo.com"
+        }
+    }
 }
