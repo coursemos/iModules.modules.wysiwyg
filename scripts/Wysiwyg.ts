@@ -305,6 +305,50 @@ namespace modules {
             }
 
             /**
+             * 에디터 콘텐츠 내용을 가져온다.
+             *
+             * @return {Object} data
+             */
+            getValue(): {
+                id: string;
+                content: string;
+                attachments: string[];
+            } {
+                if (this.isEmpty() == true && this.getAttachments().length == 0) {
+                    return null;
+                }
+
+                return {
+                    id: this.id,
+                    content: this.getContent(),
+                    attachments: this.getAttachments(),
+                };
+            }
+
+            /**
+             * 에디터 콘텐츠 내용을 설정한다.
+             *
+             * @param {Object} data
+             */
+            setValue(data: { content?: string; attachments?: string[] } = null): void {
+                this.editor.$get().froalaEditor('html.set', data?.content ?? '');
+                this.uploader.setValue(data?.attachments ?? []);
+            }
+
+            /**
+             * 본문이 비었는지 확인한다. P, BR 태그 및 공백등을 제거하여 실제 데이터가 존재하는지 확인한다.
+             *
+             * @return {boolean} is_empty
+             */
+            isEmpty(): boolean {
+                return (
+                    this.getContent()
+                        .replace(/<\/?(p|br|span)[^>]*>/gi, '')
+                        .trim().length == 0
+                );
+            }
+
+            /**
              * 이미지를 업로드하고 있는 도중 에디터에 업로드중인 이미지의 Placeholder 를 추가한다.
              *
              * @param {modules.attachment.Uploader.File} image - 업로드할 이미지파일 객체
