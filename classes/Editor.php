@@ -221,6 +221,8 @@ class Editor
             [
                 'data-role' => 'module',
                 'data-module' => 'wysiwyg',
+                'data-field' => 'editor',
+                'data-name' => $this->_name,
             ],
             $textarea
         );
