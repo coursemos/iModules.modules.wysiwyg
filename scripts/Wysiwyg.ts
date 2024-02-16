@@ -132,17 +132,17 @@ namespace modules {
                 };
 
                 this.editor = new modules.wysiwyg.FroalaEditor($textarea.getEl(), properties);
+                if ($textarea.getAttr('data-uploader-id')) {
+                    const attachment = Modules.get('attachment') as modules.attachment.Attachment;
+                    this.uploader = attachment.getUploader(
+                        Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]')
+                    );
+                    this.uploader.setEditor(this);
+                }
+
                 this.editor.render().then(($editor) => {
                     if ($editor === null) {
                         return;
-                    }
-
-                    if ($textarea.getAttr('data-uploader-id')) {
-                        const attachment = Modules.get('attachment') as modules.attachment.Attachment;
-                        this.uploader = attachment.getUploader(
-                            Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]')
-                        );
-                        this.uploader.setEditor(this);
                     }
 
                     this.uploader.addEvent('update', (file: modules.attachment.Uploader.File) => {
@@ -288,6 +288,10 @@ namespace modules {
              * @return {string} content
              */
             getContent(): string {
+                if (this.editor.$get() === null) {
+                    return this.$textarea.getValue();
+                }
+
                 if (this.editor.$get().froalaEditor('codeView.isActive') === true) {
                     this.editor.$get().froalaEditor('codeView.toggle');
                 }

@@ -112,14 +112,14 @@ var modules;
                     wrap_line_length: 0,
                 };
                 this.editor = new modules.wysiwyg.FroalaEditor($textarea.getEl(), properties);
+                if ($textarea.getAttr('data-uploader-id')) {
+                    const attachment = Modules.get('attachment');
+                    this.uploader = attachment.getUploader(Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]'));
+                    this.uploader.setEditor(this);
+                }
                 this.editor.render().then(($editor) => {
                     if ($editor === null) {
                         return;
-                    }
-                    if ($textarea.getAttr('data-uploader-id')) {
-                        const attachment = Modules.get('attachment');
-                        this.uploader = attachment.getUploader(Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]'));
-                        this.uploader.setEditor(this);
                     }
                     this.uploader.addEvent('update', (file) => {
                         const selector = 'img[data-index="' + file.index + '"], a[data-index="' + file.index + '"]';
@@ -236,6 +236,9 @@ var modules;
              * @return {string} content
              */
             getContent() {
+                if (this.editor.$get() === null) {
+                    return this.$textarea.getValue();
+                }
                 if (this.editor.$get().froalaEditor('codeView.isActive') === true) {
                     this.editor.$get().froalaEditor('codeView.toggle');
                 }
