@@ -78,31 +78,36 @@ namespace modules {
                 this.id = this.$textarea.getAttr('data-id');
 
                 properties ??= {};
+                properties.scrollableContainer = 'div[data-module=wysiwyg]';
+                properties.tooltips = false;
                 properties.toolbarSticky = false;
-                properties.toolbarButtons ??= [
-                    'html',
-                    '|',
-                    'bold',
-                    'italic',
-                    'underline',
-                    '|',
-                    'paragraphFormat',
-                    'fontSize',
-                    'color',
-                    '|',
-                    'align',
-                    'formatOL',
-                    'formatUL',
-                    '|',
-                    'insertLink',
-                    'insertTable',
-                    'insertImage',
-                    'insertFile',
-                    'insertVideo',
-                    'insertCode',
-                    'emoticons',
-                    'quote',
-                ];
+                properties.toolbarButtons =
+                    properties.toolbarButtonsMD =
+                    properties.toolbarButtonsSM =
+                    properties.toolbarButtonsXS =
+                        [
+                            'html',
+                            '|',
+                            'bold',
+                            'underline',
+                            'color',
+                            'fontOptions',
+                            'paragraphFormat',
+                            '|',
+                            'insertHR',
+                            'align',
+                            'formatOL',
+                            'formatUL',
+                            'quote',
+                            '|',
+                            'insertLink',
+                            'insertTable',
+                            'insertImage',
+                            'insertVideo',
+                            'insertFile',
+                            'emoticons',
+                        ];
+
                 properties.imageDefaultWidth = 0;
                 properties.imageAddNewLine = true;
                 properties.imageEditButtons = [
@@ -148,9 +153,8 @@ namespace modules {
                     this.uploader.addEvent('update', (file: modules.attachment.Uploader.File) => {
                         const selector = 'img[data-index="' + file.index + '"], a[data-index="' + file.index + '"]';
                         const $placeholder = this.editor.$(selector, this.editor.get().$el);
-
                         if ($placeholder.length == 1) {
-                            $placeholder.attr('data-attachment-id', file.attachment.id);
+                            $placeholder.attr('data-attachment-id', file.attachment.id ?? 'UPLOADING');
 
                             if (file.status == 'COMPLETE') {
                                 if ($placeholder.is('img') == true) {
@@ -165,6 +169,7 @@ namespace modules {
                                     );
                                 } else {
                                     $placeholder.replaceWith(this.getFileLink(file));
+                                    this.editor.get().edit.on();
                                 }
                             }
                         }
@@ -203,10 +208,10 @@ namespace modules {
 
                         const attachments = this.uploader.add(files);
                         for (const attachment of attachments) {
-                            editor.html.insert(this.getFileLink(attachment));
+                            const placeholder = this.getFileLink(attachment);
+                            editor.html.insert(placeholder);
                             editor.placeholder.refresh();
                             editor.popups.hideAll();
-                            editor.edit.on();
                         }
 
                         return false;
@@ -240,17 +245,18 @@ namespace modules {
              */
             getFileLink(file: modules.attachment.Uploader.File): string {
                 const attributes: { [key: string]: string } = {
-                    src: null,
-                    'data-attachment-id': file.attachment.id ?? null,
+                    src: '',
+                    'data-attachment-id': file.attachment.id ?? 'UPLOADING',
                     'data-module': 'attachment',
-                    download: null,
+                    download: '',
                 };
 
                 if (file.status == 'COMPLETE') {
                     attributes.src = file.attachment.download;
                     attributes.download = file.attachment.name;
                 } else {
-                    attributes.index = file.index.toString();
+                    attributes['data-index'] = file.index.toString();
+                    attributes['class'] = 'fr-uploading';
                 }
 
                 const $link = Html.create('a', attributes);
@@ -261,7 +267,7 @@ namespace modules {
                         file.attachment.extension
                     )
                 );
-                $link.append(Html.create('b', null, file.attachment.name));
+                $link.append(Html.create('span', null, file.attachment.name));
                 $link.append(Html.create('small', null, Format.size(file.attachment.size)));
 
                 return $link.toHtml();

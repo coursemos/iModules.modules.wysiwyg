@@ -105,14 +105,21 @@ class Wysiwyg extends \Module
                     $content = str_replace($origin, '', $content);
                 }
 
+                $attributes = [
+                    'href' => $attachment->getUrl('download', $is_full_url),
+                    'data-attachment-id' => $attachment_id,
+                    'data-module' => 'attachment',
+                    'download' => $attachment->getName(),
+                ];
+
+                if ($is_purifier == false) {
+                    $attributes['class'] = 'fr-deletable';
+                    $attributes['contenteditable'] = 'false';
+                }
+
                 $insert = \Html::element(
                     'a',
-                    [
-                        'href' => $attachment->getUrl('download', $is_full_url),
-                        'data-attachment-id' => $attachment_id,
-                        'data-module' => 'attachment',
-                        'download' => $attachment->getName(),
-                    ],
+                    $attributes,
                     \Html::element(
                         'i',
                         [
@@ -121,7 +128,7 @@ class Wysiwyg extends \Module
                         ],
                         $attachment->getExtension()
                     ) .
-                        \Html::element('b', null, $attachment->getName()) .
+                        \Html::element('span', null, $attachment->getName()) .
                         \Html::element('small', null, \Format::size($attachment->getSize()))
                 );
 
@@ -204,8 +211,8 @@ class Wysiwyg extends \Module
         }
 
         \Html::font('FontAwesome');
+        \Html::font('bootstrap');
         \Html::script(self::getBase() . '/scripts/FroalaEditor.js');
-        \Html::style(self::getBase() . '/styles/FroalaEditor.css');
 
         self::$_isEditorLoaded = true;
     }
