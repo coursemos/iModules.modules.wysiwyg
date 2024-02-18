@@ -36,6 +36,8 @@
         "Align Right": "오른쪽정렬",
         "Align Justify": "양쪽정렬",
         "None": "없음",
+        "Hr": "수평선",
+        "List": "리스트",
         "Ordered List": "숫자 리스트",
         "Default": "기본",
         "Lower Alpha": "알파벳 소문자",

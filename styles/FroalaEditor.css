@@ -880,6 +880,12 @@ div[data-module='wysiwyg'] {
                     content: '\F331';
                 }
             }
+            .fa-minus {
+                font-family: bootstrap;
+                &::before {
+                    content: '\F426';
+                }
+            }
             .fa-align-left {
                 font-family: bootstrap;
                 &::before {
@@ -1277,6 +1283,7 @@ div[data-module='wysiwyg'] {
                                     white-space: nowrap;
                                     color: inherit;
                                     text-decoration: none;
+                                    overflow: auto;
 
                                     > i {
                                         width: var(--editor-toolbar-button-size);
@@ -1884,7 +1891,7 @@ div[data-module='wysiwyg'] {
                     }
 
                     &.fr-loader {
-                        background: #bcdbf7;
+                        background: var(--editor-border-color-default);
                         height: 10px;
                         width: 100%;
                         margin-top: 20px;
@@ -1905,6 +1912,52 @@ div[data-module='wysiwyg'] {
                             top: 0;
                             animation: loading 2s linear infinite;
                         }
+                    }
+                }
+            }
+
+            &.fr-file-upload-layer {
+                border: dashed 2px var(--editor-border-color-default);
+                padding: 25px 0;
+                position: relative;
+                font-size: 14px;
+                letter-spacing: 1px;
+                line-height: 140%;
+                box-sizing: border-box;
+                text-align: center;
+
+                &:hover {
+                    background: var(--editor-toolbar-background-hover);
+                }
+
+                &.fr-drop {
+                    background: var(--editor-toolbar-background-hover);
+                    border-color: var(--editor-color-active);
+                }
+
+                > .fr-form {
+                    opacity: 0;
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    z-index: 2147483640;
+                    overflow: hidden;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    width: 100% !important;
+
+                    > input {
+                        cursor: pointer;
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                        bottom: 0;
+                        width: 500%;
+                        height: 100%;
+                        margin: 0;
+                        font-size: 400px;
                     }
                 }
             }

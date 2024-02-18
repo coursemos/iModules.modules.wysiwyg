@@ -90,11 +90,11 @@ namespace modules {
                             '|',
                             'bold',
                             'underline',
-                            'color',
                             'fontOptions',
+                            'color',
                             'paragraphFormat',
                             '|',
-                            'insertHR',
+                            'Hr',
                             'align',
                             'formatOL',
                             'formatUL',
@@ -248,15 +248,17 @@ namespace modules {
                     src: '',
                     'data-attachment-id': file.attachment.id ?? 'UPLOADING',
                     'data-module': 'attachment',
+                    'contenteditable': 'false',
                     download: '',
                 };
 
                 if (file.status == 'COMPLETE') {
                     attributes.src = file.attachment.download;
                     attributes.download = file.attachment.name;
+                    attributes['class'] = 'fr-deletable';
                 } else {
                     attributes['data-index'] = file.index.toString();
-                    attributes['class'] = 'fr-uploading';
+                    attributes['class'] = 'fr-uploading fr-deletable';
                 }
 
                 const $link = Html.create('a', attributes);
@@ -270,7 +272,7 @@ namespace modules {
                 $link.append(Html.create('span', null, file.attachment.name));
                 $link.append(Html.create('small', null, Format.size(file.attachment.size)));
 
-                return $link.toHtml();
+                return $link.toHtml() + '&nbsp;';
             }
 
             /**

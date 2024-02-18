@@ -71,11 +71,11 @@ var modules;
                                     '|',
                                     'bold',
                                     'underline',
-                                    'color',
                                     'fontOptions',
+                                    'color',
                                     'paragraphFormat',
                                     '|',
-                                    'insertHR',
+                                    'Hr',
                                     'align',
                                     'formatOL',
                                     'formatUL',
@@ -205,21 +205,23 @@ var modules;
                     src: '',
                     'data-attachment-id': file.attachment.id ?? 'UPLOADING',
                     'data-module': 'attachment',
+                    'contenteditable': 'false',
                     download: '',
                 };
                 if (file.status == 'COMPLETE') {
                     attributes.src = file.attachment.download;
                     attributes.download = file.attachment.name;
+                    attributes['class'] = 'fr-deletable';
                 }
                 else {
                     attributes['data-index'] = file.index.toString();
-                    attributes['class'] = 'fr-uploading';
+                    attributes['class'] = 'fr-uploading fr-deletable';
                 }
                 const $link = Html.create('a', attributes);
                 $link.append(Html.create('i', { 'data-type': file.attachment.type, 'data-extension': file.attachment.extension }, file.attachment.extension));
                 $link.append(Html.create('span', null, file.attachment.name));
                 $link.append(Html.create('small', null, Format.size(file.attachment.size)));
-                return $link.toHtml();
+                return $link.toHtml() + '&nbsp;';
             }
             /**
              * 파일을 삽입한다.
