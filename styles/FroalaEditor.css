@@ -1040,6 +1040,24 @@ div[data-module='wysiwyg'] {
                     content: '\F1B6';
                 }
             }
+            .fa-external-link {
+                font-family: bootstrap;
+                &::before {
+                    content: '\F1C5';
+                }
+            }
+            .fa-edit {
+                font-family: bootstrap;
+                &::before {
+                    content: '\F4CA';
+                }
+            }
+            .fa-unlink {
+                font-family: bootstrap;
+                &::before {
+                    content: '\F567';
+                }
+            }
 
             &.fr-btn {
                 width: var(--editor-toolbar-button-size);
