@@ -2046,6 +2046,12 @@ div[data-module='wysiwyg'] {
                 content: '\F567';
             }
         }
+        .fa-upload {
+            font-family: bootstrap;
+            &::before {
+                content: '\F603';
+            }
+        }
     }
 }
 
