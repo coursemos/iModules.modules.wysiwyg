@@ -30,7 +30,7 @@ class Editor
     /**
      * @var int $_height 위지윅에디터 높이 (px 단위)
      */
-    private int $_height = 200;
+    private int $_height = 300;
 
     /**
      * @var ?string $_maxHeight 위지윅에디터 최대높이 (px 단위, NULL 인 경우 제한하지 않음)

@@ -73,8 +73,9 @@ var modules;
                                     'underline',
                                     'fontOptions',
                                     'color',
-                                    'paragraphFormat',
                                     '|',
+                                    'paragraphFormat',
+                                    'paragraphStyle',
                                     'Hr',
                                     'align',
                                     'formatOL',
@@ -102,9 +103,11 @@ var modules;
                     '|',
                     'imageRemove',
                 ];
+                properties.paragraphStyles = {
+                    'fr-font-large': 'Large Font',
+                    'fr-box-notice': 'Notice Box',
+                };
                 properties.videoUpload = false;
-                properties.heightMin ??= $textarea.getAttr('data-height') ?? 100;
-                properties.heightMax ??= $textarea.getAttr('data-max-height') ?? null;
                 properties.imageCORSProxy = '/module/wysiwyg/process/cors/';
                 properties.codeBeautifierOptions = {
                     end_with_newline: true,

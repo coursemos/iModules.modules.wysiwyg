@@ -8,6 +8,8 @@
  * @license MIT License
  * @modified 2024. 2. 6.
  */
+@import 'https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap';
+
 div[data-role='module'][data-module='wysiwyg'] {
     position: relative;
     z-index: 5;
@@ -21,6 +23,15 @@ div[data-role='module'][data-module='wysiwyg'] {
     div.fr-box,
     div[data-role='wysiwyg-content'] {
         line-height: var(--line-height-default);
+
+        pre {
+            background: var(--color-background-400);
+            font-family: 'Nanum Gothic Coding' monospace;
+
+            a {
+                font-family: 'Nanum Gothic Coding' monospace !important;
+            }
+        }
 
         table {
             border-collapse: collapse;
@@ -321,6 +332,17 @@ div[data-role='module'][data-module='wysiwyg'] {
                     max-width: calc(100% - 5px);
                 }
             }
+        }
+
+        .fr-font-large {
+            font-size: 1.2em;
+        }
+
+        .fr-box-notice {
+            padding: 8px;
+            color: #bf360c;
+            background: #ffe0b2;
+            border: 1px solid #ffb74d;
         }
     }
 }
