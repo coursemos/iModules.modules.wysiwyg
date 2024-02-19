@@ -210,9 +210,9 @@ class Wysiwyg extends \Module
             return;
         }
 
-        \Html::font('FontAwesome');
         \Html::font('bootstrap');
         \Html::script(self::getBase() . '/scripts/FroalaEditor.js');
+        \Html::style(self::getBase() . '/styles/FroalaEditor.css');
 
         self::$_isEditorLoaded = true;
     }

@@ -1790,6 +1790,9 @@ div[data-module='wysiwyg'] {
     }
 
     .fr-command {
+        .fa {
+            font-style: normal;
+        }
         .fa-arrow-left {
             font-family: bootstrap;
             &::before {
