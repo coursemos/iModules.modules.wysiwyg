@@ -112,6 +112,9 @@ namespace modules {
                 properties.imageDefaultWidth = 0;
                 properties.imageAddNewLine = true;
                 properties.imageEditButtons = [
+                    'imageReplace',
+                    'imageRemove',
+                    '|',
                     'imageAlign',
                     'imageLink',
                     'linkOpen',
@@ -120,14 +123,12 @@ namespace modules {
                     'imageDisplay',
                     'imageAlt',
                     'imageSize',
-                    '|',
-                    'imageRemove',
                 ];
                 properties.paragraphStyles = {
                     'fr-font-large': 'Large Font',
                     'fr-box-notice': 'Notice Box',
                 };
-                properties.videoUpload = false;
+                properties.videoUpload = true;
                 properties.imageCORSProxy = '/module/wysiwyg/process/cors/';
                 properties.codeBeautifierOptions = {
                     end_with_newline: true,
@@ -239,51 +240,49 @@ namespace modules {
                     }
 
                     this.uploader.addEvent('update', (file: modules.attachment.Uploader.File) => {
-                        const selector = 'img[data-index="' + file.index + '"], a[data-index="' + file.index + '"]';
+                        const selector = '*[data-attachment-id][data-index="' + file.index + '"]';
                         const $placeholder = this.editor.$(selector, this.editor.get().$el);
                         if ($placeholder.length == 1) {
                             $placeholder.attr('data-attachment-id', file.attachment.id ?? 'UPLOADING');
 
                             if (file.status == 'COMPLETE') {
                                 if ($placeholder.is('img') == true) {
-                                    $placeholder.attr('src', file.attachment.view);
-                                    this.editor.get().image.insert(
-                                        file.attachment.view,
-                                        false,
-                                        {
-                                            'attachment-id': file.attachment.id,
-                                        },
-                                        $placeholder
-                                    );
-                                } else {
+                                    $placeholder.replaceWith(this.getImage(file));
+                                } else if ($placeholder.is('a') == true) {
                                     $placeholder.replaceWith(this.getFileLink(file));
-                                    this.editor.get().edit.on();
+                                } else if ($placeholder.is('video') == true) {
+                                    $placeholder.replaceWith(this.getVideoPlayer(file));
                                 }
                             }
+                        }
+
+                        const $uploading = this.editor.$('*[data-attachment-id].fr-uploading', this.editor.get().$el);
+
+                        if ($uploading.length == 0) {
+                            this.editor.get().edit.on();
                         }
                     });
 
-                    $editor.on(
-                        'froalaEditor.image.beforeUpload',
-                        (_e: any, editor: any, files: FileList, $image_placeholder: any) => {
-                            if (files.length == 0) {
-                                return false;
-                            }
-
-                            const attachments = this.uploader.add(files);
-                            for (const attachment of attachments) {
-                                const $img = this.addImagePlaceholder(attachment, editor, $image_placeholder);
-                                $img.addClass('fr-uploading');
-                                if ($img.next().is('br')) {
-                                    $img.next().remove();
-                                }
-
-                                editor.placeholder.refresh();
-                                editor.edit.off();
-                            }
+                    $editor.on('froalaEditor.image.beforeUpload', (_e: any, editor: any, files: FileList) => {
+                        if (files.length == 0) {
                             return false;
                         }
-                    );
+
+                        editor.edit.off();
+                        editor.events.focus(true);
+                        editor.selection.restore();
+
+                        const attachments = this.uploader.add(files);
+                        for (const attachment of attachments) {
+                            const placeholder = this.getImage(attachment);
+                            editor.html.insert(placeholder);
+                        }
+
+                        editor.placeholder.refresh();
+                        editor.popups.hideAll();
+
+                        return false;
+                    });
 
                     $editor.on('froalaEditor.file.beforeUpload', (_e: any, editor: any, files: FileList) => {
                         if (files.length == 0) {
@@ -298,9 +297,31 @@ namespace modules {
                         for (const attachment of attachments) {
                             const placeholder = this.getFileLink(attachment);
                             editor.html.insert(placeholder);
-                            editor.placeholder.refresh();
-                            editor.popups.hideAll();
                         }
+
+                        editor.placeholder.refresh();
+                        editor.popups.hideAll();
+
+                        return false;
+                    });
+
+                    $editor.on('froalaEditor.video.beforeUpload', (_e: any, editor: any, files: FileList) => {
+                        if (files.length == 0) {
+                            return false;
+                        }
+
+                        editor.edit.off();
+                        editor.events.focus(true);
+                        editor.selection.restore();
+
+                        const attachments = this.uploader.add(files);
+                        for (const attachment of attachments) {
+                            const placeholder = this.getVideoPlayer(attachment, true);
+                            editor.html.insert(placeholder);
+                        }
+
+                        editor.placeholder.refresh();
+                        editor.popups.hideAll();
 
                         return false;
                     });
@@ -323,6 +344,31 @@ namespace modules {
              */
             getUploader(): modules.attachment.Uploader {
                 return this.uploader;
+            }
+
+            /**
+             * 이미지 태그를 가져온다.
+             *
+             * @param {modules.attachment.Uploader.File} file
+             * @return {string} html
+             */
+            getImage(file: modules.attachment.Uploader.File): string {
+                const attributes: { [key: string]: string } = {
+                    src: file.attachment.view,
+                    'data-attachment-id': file.attachment.id ?? 'UPLOADING',
+                };
+
+                if (file.status == 'COMPLETE') {
+                    attributes.src = file.attachment.download;
+                    attributes.download = file.attachment.name;
+                    attributes['class'] = 'fr-fic fr-dib';
+                } else {
+                    attributes['data-index'] = file.index.toString();
+                    attributes['class'] = 'fr-uploading fr-fic fr-dib';
+                }
+
+                const $img = Html.create('img', attributes);
+                return $img.toHtml() + '<br>';
             }
 
             /**
@@ -361,6 +407,43 @@ namespace modules {
                 $link.append(Html.create('small', null, Format.size(file.attachment.size)));
 
                 return $link.toHtml() + '&nbsp;';
+            }
+
+            /**
+             * 비디오 플레이어를 가져온다.
+             *
+             * @param {modules.attachment.Uploader.File} file
+             * @param {boolean} is_wrapper
+             * @return {string} html
+             */
+            getVideoPlayer(file: modules.attachment.Uploader.File, is_wrapper: boolean = false): string {
+                const attributes: { [key: string]: string } = {
+                    'data-attachment-id': file.attachment.id ?? 'UPLOADING',
+                    'controls': 'true',
+                };
+
+                if (file.status == 'COMPLETE') {
+                    attributes.src = file.attachment.view;
+                    attributes.download = file.attachment.name;
+                    attributes['class'] = 'fr-deletable fr-draggable fr-fvc fr-dvi';
+                } else {
+                    attributes['data-index'] = file.index.toString();
+                    attributes['class'] = 'fr-uploading fr-deletable fr-draggable fr-fvc fr-dvi';
+                }
+
+                const $video = Html.create('video', attributes);
+
+                if (is_wrapper === true) {
+                    const $wrapper = Html.create('span', {
+                        class: 'fr-video fr-dvb fr-draggable',
+                        contenteditable: 'false',
+                        draggable: 'true',
+                    });
+                    $wrapper.append($video);
+                    return $wrapper.toHtml() + '<br>';
+                }
+
+                return $video.toHtml() + '<br>';
             }
 
             /**
@@ -446,132 +529,6 @@ namespace modules {
                         .replace(/<\/?(p|br|span)[^>]*>/gi, '')
                         .trim().length == 0
                 );
-            }
-
-            /**
-             * 이미지를 업로드하고 있는 도중 에디터에 업로드중인 이미지의 Placeholder 를 추가한다.
-             *
-             * @param {modules.attachment.Uploader.File} image - 업로드할 이미지파일 객체
-             * @param {any} editor - 이미지가 업로드되는 에디터 객체
-             */
-            addImagePlaceholder(image: modules.attachment.Uploader.File, editor: any, $image_placeholder: any): any {
-                if ($image_placeholder) {
-                    $image_placeholder.attr('data-attachment-id', image.attachment.id);
-                    $image_placeholder.attr('data-index', image.index);
-                    editor.edit.on();
-                    editor.undo.saveStep();
-
-                    $image_placeholder.data('fr-old-src', $image_placeholder.attr('src'));
-                    $image_placeholder.attr('src', image.attachment.view);
-
-                    return $image_placeholder;
-                } else {
-                    const $image = Html.create('img', {
-                        src: image.attachment.view,
-                        'data-attachment-id': image.attachment.id,
-                        'data-index': image.index.toString(),
-                    });
-
-                    const $img = this.editor.$($image.getEl());
-                    const _align = editor.opts.imageDefaultAlign;
-                    const _display = editor.opts.imageDefaultDisplay;
-
-                    if (!editor.opts.htmlUntouched && editor.opts.useClasses) {
-                        $img.removeClass('fr-fil fr-fir fr-dib fr-dii');
-
-                        if (_align) {
-                            $img.addClass('fr-fi' + _align[0]);
-                        }
-
-                        if (_display) {
-                            $img.addClass('fr-di' + _display[0]);
-                        }
-                    } else {
-                        if (_display == 'inline') {
-                            $img.css({
-                                display: 'inline-block',
-                                verticalAlign: 'bottom',
-                                margin: editor.opts.imageDefaultMargin,
-                            });
-
-                            if (_align == 'center') {
-                                $img.css({
-                                    'float': 'none',
-                                    marginBottom: '',
-                                    marginTop: '',
-                                    maxWidth: 'calc(100% - ' + 2 * editor.opts.imageDefaultMargin + 'px)',
-                                    textAlign: 'center',
-                                });
-                            } else if (_align == 'left') {
-                                $img.css({
-                                    'float': 'left',
-                                    marginLeft: 0,
-                                    maxWidth: 'calc(100% - ' + editor.opts.imageDefaultMargin + 'px)',
-                                    textAlign: 'left',
-                                });
-                            } else {
-                                $img.css({
-                                    'float': 'right',
-                                    marginRight: 0,
-                                    maxWidth: 'calc(100% - ' + editor.opts.imageDefaultMargin + 'px)',
-                                    textAlign: 'right',
-                                });
-                            }
-                        } else if (_display == 'block') {
-                            $img.css({
-                                display: 'block',
-                                'float': 'none',
-                                verticalAlign: 'top',
-                                margin: editor.opts.imageDefaultMargin + 'px auto',
-                                textAlign: 'center',
-                            });
-
-                            if (_align == 'left') {
-                                $img.css({
-                                    marginLeft: 0,
-                                    textAlign: 'left',
-                                });
-                            } else if (_align == 'right') {
-                                $img.css({
-                                    marginRight: 0,
-                                    textAlign: 'right',
-                                });
-                            }
-                        }
-                    }
-
-                    editor.edit.on();
-                    editor.events.focus(true);
-                    editor.selection.restore();
-                    editor.undo.saveStep();
-
-                    if (editor.opts.imageSplitHTML) {
-                        editor.markers.split();
-                    } else {
-                        editor.markers.insert();
-                    }
-
-                    editor.html.wrap();
-                    var $marker = editor.$el.find('.fr-marker');
-
-                    if ($marker.length) {
-                        if ($marker.parent().is('hr')) {
-                            $marker.parent().after($marker);
-                        }
-
-                        if (editor.node.isLastSibling($marker) && $marker.parent().hasClass('fr-deletable')) {
-                            $marker.insertAfter($marker.parent());
-                        }
-
-                        $marker.replaceWith($img);
-                    } else {
-                        editor.$el.append($img);
-                    }
-
-                    editor.selection.clear();
-
-                    return $img;
-                }
             }
         }
     }
