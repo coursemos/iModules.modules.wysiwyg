@@ -1452,10 +1452,10 @@ div[data-module='wysiwyg'] {
                     z-index: 1;
 
                     > .fr-selected-color {
-                        color: var(--editor-background-default);
+                        color: #fff;
                         font-family: FontAwesome;
-                        font-size: 14px;
-                        font-weight: 400;
+                        font-size: 24px;
+                        font-weight: 700;
                         line-height: 32px;
                         position: absolute;
                         top: 0;
@@ -1464,12 +1464,16 @@ div[data-module='wysiwyg'] {
                         left: 0;
                         text-align: center;
                         cursor: default;
-                        text-stroke: 1px var(--editor-color-default);
-                        -webkit-text-stroke: 1px var(--editor-color-default);
+                        text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.4);
+                        font-family: bootstrap;
+
+                        &::before {
+                            content: '\F26E';
+                        }
                     }
 
-                    > i,
-                    > svg {
+                    > i {
+                        color: var(--editor-color-default);
                         text-align: center;
                         line-height: 32px;
                         height: 32px;
@@ -1479,6 +1483,9 @@ div[data-module='wysiwyg'] {
                         bottom: 0;
                         cursor: default;
                         left: 0;
+                        &::before {
+                            content: '\F331';
+                        }
                     }
 
                     &:hover,
@@ -1704,6 +1711,7 @@ div[data-module='wysiwyg'] {
 
     .fr-command {
         .fa {
+            display: inline-block;
             font-style: normal;
         }
         .fa-arrow-left {
