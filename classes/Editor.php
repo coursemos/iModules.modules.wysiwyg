@@ -45,7 +45,7 @@ class Editor
     /**
      * @var string $_content 위지윅에디터 콘텐츠 내용
      */
-    private string $_content = '';
+    private ?string $_content = null;
 
     /**
      * @var bool $_required 위지윅에디터 필수입력 여부
@@ -97,10 +97,10 @@ class Editor
     /**
      * 위지윅에디터 본문내용을 설정한다.
      *
-     * @param string $content 본문내용
+     * @param ?string $content 본문내용
      * @return \modules\wysiwyg\Editor $this
      */
-    public function setContent(string $content): \modules\wysiwyg\Editor
+    public function setContent(?string $content): \modules\wysiwyg\Editor
     {
         $this->_content = $content;
         return $this;
@@ -214,7 +214,7 @@ class Editor
             $properties['data-uploader-name'] = $this->getUploader()->getName();
         }
 
-        $textarea = \Html::element('textarea', $properties, $this->_content);
+        $textarea = \Html::element('textarea', $properties, $this->_content ?? '');
 
         $wysiwyg = \Html::element(
             'div',
