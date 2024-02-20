@@ -7,7 +7,7 @@
  * @file /modules/wysiwyg/Wysiwyg.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 14.
+ * @modified 2024. 2. 20.
  */
 namespace modules\wysiwyg;
 class Wysiwyg extends \Module
@@ -88,6 +88,50 @@ class Wysiwyg extends \Module
                     'class' => $class,
                     'style' => $style,
                 ]);
+
+                $content = str_replace($origin, $insert, $content);
+            }
+        }
+
+        if (
+            preg_match_all(
+                '/<video[^>]*data-attachment-id="(.*?)"[^>]*>.*?<\/video>/i',
+                $content,
+                $matches,
+                PREG_SET_ORDER
+            ) == true
+        ) {
+            foreach ($matches as $matched) {
+                $origin = $matched[0];
+                $attachment_id = $matched[1];
+                $attachment = $mAttachment->getAttachment($attachment_id);
+                if ($attachment === null) {
+                    $content = str_replace($origin, '', $content);
+                }
+
+                if (preg_match('/class="(.*?)"/i', $origin, $class) == true) {
+                    $class = $class[1];
+                } else {
+                    $class = null;
+                }
+
+                if (preg_match('/style="(.*?)"/i', $origin, $style) == true) {
+                    $style = $style[1];
+                } else {
+                    $style = null;
+                }
+
+                $insert = \Html::element(
+                    'video',
+                    [
+                        'src' => $attachment->getUrl('view', $is_full_url),
+                        'data-attachment-id' => $attachment_id,
+                        'controls' => '1',
+                        'class' => $class,
+                        'style' => $style,
+                    ],
+                    ''
+                );
 
                 $content = str_replace($origin, $insert, $content);
             }
@@ -180,7 +224,7 @@ class Wysiwyg extends \Module
             $def->addAttribute('i', 'data-type', 'Text');
             $def->addAttribute('i', 'data-extension', 'Text');
 
-            $def->addElement('iframe', 'Inline', 'Flow', 'Common', [
+            $def->addElement('iframe', 'Block', 'Flow', 'Common', [
                 'src' => 'URI#embedded',
                 'width' => 'Length',
                 'height' => 'Length',
@@ -193,6 +237,12 @@ class Wysiwyg extends \Module
                 'longdesc' => 'URI',
                 'marginheight' => 'Pixels',
                 'marginwidth' => 'Pixels',
+            ]);
+
+            $def->addElement('video', 'Block', 'Flow', 'Common', [
+                'src' => 'URI',
+                'data-attachment-id' => 'Text',
+                'controls' => 'Bool',
             ]);
 
             self::$_HtmlPurifier = new \HTMLPurifier($config);
