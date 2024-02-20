@@ -201,8 +201,8 @@ class Wysiwyg extends \Module
             $config->set('Cache.SerializerPath', \Configs::cache());
             $config->set('Attr.EnableID', false);
             $config->set('Attr.AllowedFrameTargets', ['_blank', '_self']);
+            $config->set('Attr.ForbiddenClasses', ['fr-draggable', 'fr-deletable']);
             $config->set('AutoFormat.Linkify', false);
-            $config->set('HTML.MaxImgLength', null);
             $config->set('CSS.MaxImgLength', null);
             $config->set('CSS.AllowTricky', true);
             $config->set('CSS.Trusted', true);
@@ -211,6 +211,8 @@ class Wysiwyg extends \Module
             $config->set('HTML.SafeEmbed', true);
             $config->set('HTML.SafeIframe', true);
             $config->set('HTML.SafeObject', true);
+            $config->set('HTML.MaxImgLength', null);
+            $config->set('HTML.ForbiddenAttributes', ['contenteditable']);
             $config->set('Output.FlashCompat', true);
 
             $iframe = explode("\n", str_replace(['.'], ['\\.'], $this->getConfigs('iframe')));
