@@ -148,6 +148,52 @@ class EditorContent
         }
 
         if (
+            preg_match_all(
+                '/<video[^>]*data-attachment-id="(.*?)"[^>]*>.*?<\/video>/i',
+                $content,
+                $matches,
+                PREG_SET_ORDER
+            ) == true
+        ) {
+            foreach ($matches as $matched) {
+                $origin = $matched[0];
+
+                $exists[] = $matched[1];
+                $attachment_id = $this->getAttachmentId($matched[1]);
+                if ($attachment_id === null) {
+                    $content = str_replace($origin, '', $content);
+                    continue;
+                }
+
+                $attachments[] = $attachment_id;
+
+                if (preg_match('/class="(.*?)"/i', $origin, $class) == true) {
+                    $class = $class[1];
+                } else {
+                    $class = null;
+                }
+
+                if (preg_match('/style="(.*?)"/i', $origin, $style) == true) {
+                    $style = $style[1];
+                } else {
+                    $style = null;
+                }
+
+                $insert = \Html::element(
+                    'video',
+                    [
+                        'data-attachment-id' => $attachment_id,
+                        'class' => $class,
+                        'style' => $style,
+                    ],
+                    ''
+                );
+
+                $content = str_replace($origin, $insert, $content);
+            }
+        }
+
+        if (
             preg_match_all('/<a[^>]*data-attachment-id="(.*?)"[^>]*>.*?<\/a>/i', $content, $matches, PREG_SET_ORDER) ==
             true
         ) {
