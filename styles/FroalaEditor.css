@@ -9,6 +9,10 @@
  * @copyright 2014-2019 Froala Labs
  * @modified 2024. 2. 9.
  */
+:root {
+    --editor-toolbar-header-cover-height: 0;
+}
+
 div[data-module='wysiwyg'] {
     textarea[data-role='editor'] {
         display: none;
@@ -732,10 +736,12 @@ div[data-module='wysiwyg'] {
         &::before {
             position: absolute;
             width: calc(100% + var(--input-border-weight) * 2);
-            background: var(--editor-toolbar-header-background);
-            height: var(--editor-toolbar-header-height);
+            background: var(--color-background);
+            height: var(--editor-toolbar-header-cover-height);
+            border-bottom: var(--editor-toolbar-header-height) solid var(--editor-toolbar-header-background);
             content: ' ';
-            top: 0;
+            box-sizing: content-box;
+            bottom: 100%;
             left: calc(var(--input-border-weight) * -1);
         }
 
