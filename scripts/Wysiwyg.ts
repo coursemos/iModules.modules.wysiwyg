@@ -124,6 +124,21 @@ namespace modules {
                     'imageAlt',
                     'imageSize',
                 ];
+                properties.tableEditButtons = [
+                    'tableHeader',
+                    'tableRemove',
+                    '|',
+                    'tableRows',
+                    'tableColumns',
+                    'tableCells',
+                    '-',
+                    'tableCellHorizontalAlign',
+                    'tableCellVerticalAlign',
+                    'tableCellBackground',
+                    '|',
+                    'tableStyle',
+                    'tableCellStyle',
+                ];
                 properties.paragraphStyles = {
                     'fr-font-large': 'Large Font',
                     'fr-box-notice': 'Notice Box',
