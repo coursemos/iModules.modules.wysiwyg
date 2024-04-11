@@ -95,12 +95,12 @@ var modules;
                     'imageReplace',
                     'imageRemove',
                     '|',
+                    'imageDisplay',
                     'imageAlign',
                     'imageLink',
                     'linkOpen',
                     'linkEdit',
                     'linkRemove',
-                    'imageDisplay',
                     'imageAlt',
                     'imageSize',
                 ];
