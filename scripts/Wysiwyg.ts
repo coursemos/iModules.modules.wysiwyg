@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 14.
+ * @modified 2024. 5. 13.
  */
 namespace modules {
     export namespace wysiwyg {
@@ -48,6 +48,10 @@ namespace modules {
 
         export namespace Editor {
             export interface Properties {
+                /**
+                 * @type {modules.attachment.Uploader} uploader - 업로더 객체
+                 */
+                uploader: modules.attachment.Uploader;
                 [key: string]: any;
             }
         }
@@ -241,12 +245,14 @@ namespace modules {
                 properties.linkList = [];
 
                 this.editor = new modules.wysiwyg.FroalaEditor($textarea.getEl(), properties);
-                if ($textarea.getAttr('data-uploader-id')) {
-                    const attachment = Modules.get('attachment') as modules.attachment.Attachment;
+
+                this.uploader = properties.uploader ?? null;
+
+                const attachment = Modules.get('attachment') as modules.attachment.Attachment;
+                if (this.uploader == null && $textarea.getAttr('data-uploader-id')) {
                     this.uploader = attachment.getUploader(
                         Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]')
                     );
-                    this.uploader.setEditor(this);
                 }
 
                 this.editor.render().then(($editor) => {
@@ -254,7 +260,8 @@ namespace modules {
                         return;
                     }
 
-                    this.uploader.addEvent('update', (file: modules.attachment.Uploader.File) => {
+                    this.uploader?.setEditor(this);
+                    this.uploader?.addEvent('update', (file: modules.attachment.Uploader.File) => {
                         const selector = '*[data-attachment-id][data-index="' + file.index + '"]';
                         const $placeholder = this.editor.$(selector, this.editor.get().$el);
                         if ($placeholder.length == 1) {
@@ -508,7 +515,6 @@ namespace modules {
              * @return {Object} data
              */
             getValue(): {
-                id: string;
                 content: string;
                 attachments: string[];
             } {
@@ -517,7 +523,6 @@ namespace modules {
                 }
 
                 return {
-                    id: this.id,
                     content: this.getContent(),
                     attachments: this.getAttachments(),
                 };

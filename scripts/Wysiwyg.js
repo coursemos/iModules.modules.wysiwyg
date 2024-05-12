@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 14.
+ * @modified 2024. 5. 13.
  */
 var modules;
 (function (modules) {
@@ -220,16 +220,17 @@ var modules;
                 properties.linkInsertButtons = ['linkBack'];
                 properties.linkList = [];
                 this.editor = new modules.wysiwyg.FroalaEditor($textarea.getEl(), properties);
-                if ($textarea.getAttr('data-uploader-id')) {
-                    const attachment = Modules.get('attachment');
+                this.uploader = properties.uploader ?? null;
+                const attachment = Modules.get('attachment');
+                if (this.uploader == null && $textarea.getAttr('data-uploader-id')) {
                     this.uploader = attachment.getUploader(Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]'));
-                    this.uploader.setEditor(this);
                 }
                 this.editor.render().then(($editor) => {
                     if ($editor === null) {
                         return;
                     }
-                    this.uploader.addEvent('update', (file) => {
+                    this.uploader?.setEditor(this);
+                    this.uploader?.addEvent('update', (file) => {
                         const selector = '*[data-attachment-id][data-index="' + file.index + '"]';
                         const $placeholder = this.editor.$(selector, this.editor.get().$el);
                         if ($placeholder.length == 1) {
@@ -449,7 +450,6 @@ var modules;
                     return null;
                 }
                 return {
-                    id: this.id,
                     content: this.getContent(),
                     attachments: this.getAttachments(),
                 };
