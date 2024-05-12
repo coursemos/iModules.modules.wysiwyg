@@ -7,52 +7,54 @@
  * @author froala_editor v2.9.5 (https://www.froala.com/wysiwyg-editor)
  * @license https://froala.com/wysiwyg-editor/terms/
  * @copyright 2014-2019 Froala Labs
- * @modified 2024. 4. 6.
+ * @modified 2024. 5. 13.
  */
 :root {
-    --im-wysiwyg-background-default: var(--input-background-default);
-
-    --im-wysiwyg-border-weight: var(--input-border-weight);
-    --im-wysiwyg-border-color-default: var(--input-border-color-default);
-    --im-wysiwyg-border-color-focus: var(--input-border-color-focus);
-    --im-wysiwyg-border-color-active: var(--color-primary-500);
-    --im-wysiwyg-border-radius: var(--input-border-radius);
-
-    --im-wysiwyg-toolbar-sticky-offset: 72px;
+    --im-wysiwyg-toolbar-sticky-offset: 0;
     --im-wysiwyg-toolbar-sticky-height: 0;
-    --im-wysiwyg-toolbar-sticky-background: #fff;
-    --im-wysiwyg-toolbar-border-color: #222;
+    --im-wysiwyg-toolbar-sticky-background: var(--im-color-background-500);
+}
+
+div[data-module='wysiwyg'] {
+    --im-wysiwyg-toolbar-border-color: var(--im-color-foreground-300);
     --im-wysiwyg-toolbar-border-weight: 2px;
-    --im-wysiwyg-toolbar-background-default: #fbfbfb;
+    --im-wysiwyg-toolbar-background-default: var(--im-color-background-400);
+
+    --im-wysiwyg-background-default: var(--im-color-background-500);
+    --im-wysiwyg-border-weight: var(--im-component-border-weight);
+    --im-wysiwyg-border-color-default: var(--im-color-background-300);
+    --im-wysiwyg-border-color-focus: var(--im-color-accent-500);
+    --im-wysiwyg-border-color-active: var(--im-color-accent-500);
+    --im-wysiwyg-border-radius: var(--im-component-border-radius);
 
     --im-wysiwyg-button-height: clamp(32px, 2.5rem, 48px);
     --im-wysiwyg-button-icon-size: calc(var(--im-wysiwyg-button-height) / 2);
     --im-wysiwyg-button-font-size: calc(var(--im-wysiwyg-button-icon-size) * 0.875);
-    --im-wysiwyg-button-color-default: var(--input-color-default);
-    --im-wysiwyg-button-color-active: var(--input-background-default);
-    --im-wysiwyg-button-color-disabled: var(--input-color-disabled);
-    --im-wysiwyg-button-background-hover: #ebebeb;
-    --im-wysiwyg-button-background-active: var(--color-primary-500);
-    --im-wysiwyg-button-background-active-hover: var(--color-primary-600);
+    --im-wysiwyg-button-color-default: var(--im-color-foreground-400);
+    --im-wysiwyg-button-color-active: var(--im-color-accent-backward-500);
+    --im-wysiwyg-button-color-disabled: var(--im-color-foreground-100);
+    --im-wysiwyg-button-background-hover: var(--im-color-background-300);
+    --im-wysiwyg-button-background-active: var(--im-color-accent-500);
+    --im-wysiwyg-button-background-active-hover: var(--im-color-accent-500);
 
-    --im-wysiwyg-tooltip-background: var(--input-color-default);
-    --im-wysiwyg-tooltip-color: var(--input-background-default);
+    --im-wysiwyg-tooltip-background: var(--im-color-foreground-400);
+    --im-wysiwyg-tooltip-color: var(--im-color-background-500);
     --im-wysiwyg-tooltip-font-size: calc(var(--im-wysiwyg-button-icon-size) * 0.6);
 
-    --im-wysiwyg-font-size: 14px;
-    --im-wysiwyg-color-text: #222;
-    --im-wysiwyg-color-help: var(--input-color-help);
-    --im-wysiwyg-padding: var(--input-padding-horizontal);
-    --im-wysiwyg-line-height: var(--input-line-height);
-}
+    --im-wysiwyg-font-size: var(--im-font-size-default);
+    --im-wysiwyg-font-family: var(--im-font-family-body);
+    --im-wysiwyg-color-default: var(--im-color-foreground-500);
+    --im-wysiwyg-color-help: var(--im-color-foreground-300);
+    --im-wysiwyg-padding: var(--im-component-gap-default);
+    --im-wysiwyg-line-height: var(--im-component-line-height);
 
-div[data-module='wysiwyg'] {
     textarea[data-role='editor'] {
         display: none;
         opacity: 0;
     }
 
     .fr-box {
+        font-family: var(--im-wysiwyg-font-family);
         border: var(--im-wysiwyg-border-weight) solid var(--im-wysiwyg-border-color-default);
         border-top: 0;
         background: var(--im-wysiwyg-background-default);
@@ -63,6 +65,10 @@ div[data-module='wysiwyg'] {
 
             .fr-toolbar {
                 border-color: var(--im-wysiwyg-border-color-focus);
+
+                &::before {
+                    border-color: var(--im-wysiwyg-border-color-focus);
+                }
             }
         }
 
@@ -77,7 +83,7 @@ div[data-module='wysiwyg'] {
             }
 
             .fr-element {
-                color: var(--im-wysiwyg-color-text);
+                color: var(--im-wysiwyg-color-default);
                 padding: var(--im-wysiwyg-padding);
                 font-size: var(--im-wysiwyg-font-size);
                 line-height: var(--im-wysiwyg-line-height);
@@ -159,7 +165,7 @@ div[data-module='wysiwyg'] {
                     > small {
                         width: calc(1em * var(--line-height-default));
                         height: calc(1em * var(--line-height-default));
-                        font-size: 1em;
+                        font-size: var(--im-wysiwyg-font-size);
                         overflow: hidden;
                         position: relative;
                         color: transparent;
@@ -278,9 +284,9 @@ div[data-module='wysiwyg'] {
             padding: 10px;
             margin: 0;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
-            background: #fff;
-            color: #000;
+            font-size: var(--im-wysiwyg-font-size);
+            background: var(--im-wysiwyg-background-default);
+            color: var(--im-wysiwyg-color-default);
             outline: 0;
         }
 
@@ -306,13 +312,14 @@ div[data-module='wysiwyg'] {
 
             .CodeMirror {
                 font-family: 'Nanum Gothic Coding' monospace;
-                font-size: 14px;
+                font-size: var(--im-wysiwyg-font-size);
                 height: 300px;
-                color: black;
+                color: var(--im-wysiwyg-color-default);
                 direction: ltr;
                 position: relative;
                 overflow: hidden;
-                background: white;
+                background: var(--im-wysiwyg-background-default);
+
                 pre {
                     padding: 0 4px;
                     -moz-border-radius: 0;
@@ -360,8 +367,8 @@ div[data-module='wysiwyg'] {
                 bottom: 0;
             }
             .CodeMirror-gutters {
-                border-right: 1px solid #ddd;
-                background-color: #f7f7f7;
+                border-right: 1px solid var(--im-wysiwyg-button-color-disabled);
+                background-color: var(--im-wysiwyg-border-color-default);
                 white-space: nowrap;
                 position: absolute;
                 left: 0;
@@ -375,19 +382,19 @@ div[data-module='wysiwyg'] {
                 padding: 0 3px 0 5px;
                 min-width: 20px;
                 text-align: right;
-                color: #999;
+                color: var(--im-wysiwyg-color-help);
                 white-space: nowrap;
                 -moz-box-sizing: content-box;
                 box-sizing: content-box;
             }
             .CodeMirror-guttermarker {
-                color: black;
+                color: var(--im-wysiwyg-color-default);
             }
             .CodeMirror-guttermarker-subtle {
                 color: #999;
             }
             .CodeMirror-cursor {
-                border-left: 1px solid black;
+                border-left: 1px solid var(--im-wysiwyg-color-default);
                 border-right: none;
                 width: 0;
                 position: absolute;
@@ -655,7 +662,7 @@ div[data-module='wysiwyg'] {
                     visibility: visible;
                 }
                 .CodeMirror-selected {
-                    background: #d7d4f0;
+                    background: var(--im-wysiwyg-border-color-default);
                 }
             }
             .CodeMirror-selected {
@@ -712,7 +719,7 @@ div[data-module='wysiwyg'] {
         margin-left: calc(var(--im-wysiwyg-border-weight) * -1);
         margin-right: calc(var(--im-wysiwyg-border-weight) * -1);
         top: var(--im-wysiwyg-toolbar-sticky-offset);
-        color: var(--im-wysiwyg-border-color-default);
+        color: var(--im-wysiwyg-button-color-default);
         padding-top: var(--im-wysiwyg-toolbar-border-weight);
         border-left: var(--im-wysiwyg-border-weight) solid var(--im-wysiwyg-border-color-default);
         border-right: var(--im-wysiwyg-border-weight) solid var(--im-wysiwyg-border-color-default);
@@ -1059,6 +1066,10 @@ div[data-module='wysiwyg'] {
                                         padding: 0px 12px;
                                     }
 
+                                    &.fr-box-notice {
+                                        color: #bf360c;
+                                    }
+
                                     &.fr-active {
                                         background: var(--im-wysiwyg-button-background-active);
                                         color: var(--im-wysiwyg-button-color-active);
@@ -1169,7 +1180,7 @@ div[data-module='wysiwyg'] {
         padding-top: var(--im-wysiwyg-toolbar-border-weight);
         border: var(--im-wysiwyg-border-weight) solid var(--im-wysiwyg-border-color-default);
         border-top: 0;
-        color: var(--im-wysiwyg-border-color-default);
+        color: var(--im-wysiwyg-color-default);
         background: var(--im-wysiwyg-background-default);
         box-sizing: border-box;
         user-select: none;
@@ -1217,7 +1228,7 @@ div[data-module='wysiwyg'] {
                     cursor: pointer;
                     text-align: center;
                     color: var(--im-wysiwyg-button-color-default);
-                    font-size: var(--im-wysiwyg-button-font-size);
+                    font-size: var(--im-wysiwyg-font-size);
 
                     &:hover,
                     &:focus {
@@ -1503,7 +1514,7 @@ div[data-module='wysiwyg'] {
                     }
 
                     > i {
-                        color: var(--im-wysiwyg-border-color-default);
+                        color: var(--im-wysiwyg-color-default);
                         text-align: center;
                         line-height: 32px;
                         height: 32px;
