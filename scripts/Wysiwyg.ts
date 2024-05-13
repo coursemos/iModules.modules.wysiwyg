@@ -51,7 +51,7 @@ namespace modules {
                 /**
                  * @type {modules.attachment.Uploader} uploader - 업로더 객체
                  */
-                uploader: modules.attachment.Uploader;
+                uploader?: modules.attachment.Uploader;
                 [key: string]: any;
             }
         }
