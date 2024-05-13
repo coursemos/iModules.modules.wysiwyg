@@ -7,7 +7,7 @@
  * @file /modules/wysiwyg/dtos/EditorContent.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 14.
+ * @modified 2024. 5. 13.
  */
 namespace modules\wysiwyg\dtos;
 class EditorContent
@@ -33,12 +33,12 @@ class EditorContent
     private \Component $_component;
 
     /**
-     * @var string $_content 본문내용
+     * @var string $_position_type 콘텐츠가 작성된 위치종류
      */
     private string $_position_type;
 
     /**
-     * @var string $_content 본문내용
+     * @var string $_content 콘텐츠가 작성된 위치고유값
      */
     private string|int $_position_id;
 
@@ -249,5 +249,19 @@ class EditorContent
         }
 
         return $this->_attachments;
+    }
+
+    /**
+     * 데이터베이스에 저장하기 위해 가공한 콘텐츠와 첨부파일목록을 JSON 으로 가져온다.
+     *
+     * @return object $json
+     */
+    public function getJson(): object
+    {
+        $json = new \stdClass();
+        $json->content = $this->getContent();
+        $json->attachments = $this->getAttachments();
+
+        return $json;
     }
 }
