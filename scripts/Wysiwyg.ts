@@ -69,6 +69,7 @@ namespace modules {
             $textarea: Dom;
             editor: modules.wysiwyg.FroalaEditor;
             uploader: modules.attachment.Uploader;
+            renderer: Promise<any>;
 
             /**
              * <textarea> DOM 객체를 이용하여 에디터를 활성화한다.
@@ -255,7 +256,8 @@ namespace modules {
                     );
                 }
 
-                this.editor.render().then(($editor) => {
+                this.renderer = this.editor.render();
+                this.renderer.then(($editor) => {
                     if ($editor === null) {
                         return;
                     }
@@ -510,6 +512,19 @@ namespace modules {
             }
 
             /**
+             * 첨부파일을 제거한다.
+             *
+             * @param {modules.attachment.Uploader.File} file - 제거할 파일객체
+             */
+            removeAttachment(file: modules.attachment.Uploader.File): void {
+                const $file = this.editor.$(
+                    '*[data-attachment-id="' + file.attachment.id + '"]',
+                    this.editor.get().$el
+                );
+                $file.remove();
+            }
+
+            /**
              * 에디터 콘텐츠 내용을 가져온다.
              *
              * @return {Object} data
@@ -534,8 +549,10 @@ namespace modules {
              * @param {Object} data
              */
             setValue(data: { content?: string; attachments?: string[] } = null): void {
-                this.editor.$get().froalaEditor('html.set', data?.content ?? '');
-                this.uploader.setValue(data?.attachments ?? []);
+                this.renderer.then(($editor) => {
+                    $editor.froalaEditor('html.set', data?.content ?? '');
+                    this.uploader.setValue(data?.attachments ?? []);
+                });
             }
 
             /**

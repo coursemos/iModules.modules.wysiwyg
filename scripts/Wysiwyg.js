@@ -49,6 +49,7 @@ var modules;
             $textarea;
             editor;
             uploader;
+            renderer;
             /**
              * <textarea> DOM 객체를 이용하여 에디터를 활성화한다.
              *
@@ -225,7 +226,8 @@ var modules;
                 if (this.uploader == null && $textarea.getAttr('data-uploader-id')) {
                     this.uploader = attachment.getUploader(Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]'));
                 }
-                this.editor.render().then(($editor) => {
+                this.renderer = this.editor.render();
+                this.renderer.then(($editor) => {
                     if ($editor === null) {
                         return;
                     }
@@ -441,6 +443,15 @@ var modules;
                 return this.uploader.getValue();
             }
             /**
+             * 첨부파일을 제거한다.
+             *
+             * @param {modules.attachment.Uploader.File} file - 제거할 파일객체
+             */
+            removeAttachment(file) {
+                const $file = this.editor.$('*[data-attachment-id="' + file.attachment.id + '"]', this.editor.get().$el);
+                $file.remove();
+            }
+            /**
              * 에디터 콘텐츠 내용을 가져온다.
              *
              * @return {Object} data
@@ -460,8 +471,10 @@ var modules;
              * @param {Object} data
              */
             setValue(data = null) {
-                this.editor.$get().froalaEditor('html.set', data?.content ?? '');
-                this.uploader.setValue(data?.attachments ?? []);
+                this.renderer.then(($editor) => {
+                    $editor.froalaEditor('html.set', data?.content ?? '');
+                    this.uploader.setValue(data?.attachments ?? []);
+                });
             }
             /**
              * 본문이 비었는지 확인한다. P, BR 태그 및 공백등을 제거하여 실제 데이터가 존재하는지 확인한다.
