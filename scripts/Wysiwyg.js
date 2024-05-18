@@ -50,6 +50,7 @@ var modules;
             editor;
             uploader;
             renderer;
+            listeners;
             /**
              * <textarea> DOM 객체를 이용하여 에디터를 활성화한다.
              *
@@ -58,8 +59,9 @@ var modules;
              */
             constructor($textarea, properties = null) {
                 this.$textarea = $textarea;
-                this.id = this.$textarea.getAttr('data-id');
                 properties ??= {};
+                this.id = this.$textarea.getAttr('data-id');
+                this.listeners = properties.listeners ?? {};
                 properties.scrollableContainer = 'div[data-module=wysiwyg]';
                 properties.tooltips = false;
                 properties.toolbarSticky = false;
@@ -135,6 +137,38 @@ var modules;
                     indent_size: 1,
                     wrap_line_length: 0,
                 };
+                properties.htmlAllowedAttrs = [
+                    'allowfullscreen',
+                    'allowtransparency',
+                    'alt',
+                    'autoplay',
+                    'checked',
+                    'class',
+                    'cols',
+                    'colspan',
+                    'content',
+                    'contenteditable',
+                    'controls',
+                    'data',
+                    'data-.*',
+                    'datetime',
+                    'disabled',
+                    'download',
+                    'form',
+                    'href',
+                    'id',
+                    'name',
+                    'playsinline',
+                    'readonly',
+                    'rowspan',
+                    'src',
+                    'style',
+                    'tabindex',
+                    'target',
+                    'title',
+                    'type',
+                    'value',
+                ];
                 properties.pasteDeniedTags = [
                     'abbr',
                     'address',
@@ -226,11 +260,15 @@ var modules;
                 if (this.uploader == null && $textarea.getAttr('data-uploader-id')) {
                     this.uploader = attachment.getUploader(Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]'));
                 }
-                this.renderer = this.editor.render();
-                this.renderer.then(($editor) => {
-                    if ($editor === null) {
-                        return;
-                    }
+                this.renderer = this.editor.render((editor) => {
+                    editor.events.on('keydown', (e) => {
+                        if (e.key == 'Enter' && editor.$el.atwho('isSelecting')) {
+                            return false;
+                        }
+                        if (e.key == 'Escape') {
+                            e.stopPropagation();
+                        }
+                    }, true);
                     this.uploader?.setEditor(this);
                     this.uploader?.addEvent('update', (file) => {
                         const selector = '*[data-attachment-id][data-index="' + file.index + '"]';
@@ -254,7 +292,7 @@ var modules;
                             this.editor.get().edit.on();
                         }
                     });
-                    $editor.on('froalaEditor.image.beforeUpload', (_e, editor, files) => {
+                    editor.$el.on('froalaEditor.image.beforeUpload', (_e, editor, files) => {
                         if (files.length == 0) {
                             return false;
                         }
@@ -270,7 +308,7 @@ var modules;
                         editor.popups.hideAll();
                         return false;
                     });
-                    $editor.on('froalaEditor.file.beforeUpload', (_e, editor, files) => {
+                    editor.$el.on('froalaEditor.file.beforeUpload', (_e, editor, files) => {
                         if (files.length == 0) {
                             return false;
                         }
@@ -286,7 +324,7 @@ var modules;
                         editor.popups.hideAll();
                         return false;
                     });
-                    $editor.on('froalaEditor.video.beforeUpload', (_e, editor, files) => {
+                    editor.$el.on('froalaEditor.video.beforeUpload', (_e, editor, files) => {
                         if (files.length == 0) {
                             return false;
                         }
@@ -302,6 +340,9 @@ var modules;
                         editor.popups.hideAll();
                         return false;
                     });
+                    if (typeof this.listeners.render == 'function') {
+                        this.listeners.render(this);
+                    }
                 });
             }
             /**
@@ -311,6 +352,22 @@ var modules;
              */
             getId() {
                 return this.id;
+            }
+            /**
+             * FroalaEditor 객체를 가져온다.
+             *
+             * @return {any} editor
+             */
+            getEditor() {
+                return this.editor.get();
+            }
+            /**
+             * FroalaEditor 의 DOM 객체를 가져온다.
+             *
+             * @return {any} $editor
+             */
+            $getEditor() {
+                return this.editor.get().$el;
             }
             /**
              * 에디터에 포함된 업로더를 가져온다.

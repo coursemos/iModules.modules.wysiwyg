@@ -52,13 +52,24 @@ namespace modules {
                  * @type {modules.attachment.Uploader} uploader - 업로더 객체
                  */
                 uploader?: modules.attachment.Uploader;
+
+                /**
+                 * @type {Object} listeners - 이벤트리스너
+                 */
+                listeners?: {
+                    /**
+                     * @var {Function} render - 에디터가 랜더링 되었을 때
+                     */
+                    render?: (editor: modules.wysiwyg.Editor) => void;
+                };
+
                 [key: string]: any;
             }
         }
 
         export declare class FroalaEditor {
             public constructor(textarea: HTMLElement, options: modules.wysiwyg.Editor.Properties);
-            public render(): Promise<any>;
+            public render(callback: (editor: any) => void): Promise<any>;
             public get(): any;
             public $get(): any;
             public $: any;
@@ -70,6 +81,7 @@ namespace modules {
             editor: modules.wysiwyg.FroalaEditor;
             uploader: modules.attachment.Uploader;
             renderer: Promise<any>;
+            listeners: { [name: string]: Function };
 
             /**
              * <textarea> DOM 객체를 이용하여 에디터를 활성화한다.
@@ -80,9 +92,11 @@ namespace modules {
             constructor($textarea: Dom, properties: modules.wysiwyg.Editor.Properties = null) {
                 this.$textarea = $textarea;
 
-                this.id = this.$textarea.getAttr('data-id');
-
                 properties ??= {};
+
+                this.id = this.$textarea.getAttr('data-id');
+                this.listeners = properties.listeners ?? {};
+
                 properties.scrollableContainer = 'div[data-module=wysiwyg]';
                 properties.tooltips = false;
                 properties.toolbarSticky = false;
@@ -159,6 +173,38 @@ namespace modules {
                     indent_size: 1,
                     wrap_line_length: 0,
                 };
+                properties.htmlAllowedAttrs = [
+                    'allowfullscreen',
+                    'allowtransparency',
+                    'alt',
+                    'autoplay',
+                    'checked',
+                    'class',
+                    'cols',
+                    'colspan',
+                    'content',
+                    'contenteditable',
+                    'controls',
+                    'data',
+                    'data-.*',
+                    'datetime',
+                    'disabled',
+                    'download',
+                    'form',
+                    'href',
+                    'id',
+                    'name',
+                    'playsinline',
+                    'readonly',
+                    'rowspan',
+                    'src',
+                    'style',
+                    'tabindex',
+                    'target',
+                    'title',
+                    'type',
+                    'value',
+                ];
                 properties.pasteDeniedTags = [
                     'abbr',
                     'address',
@@ -256,11 +302,20 @@ namespace modules {
                     );
                 }
 
-                this.renderer = this.editor.render();
-                this.renderer.then(($editor) => {
-                    if ($editor === null) {
-                        return;
-                    }
+                this.renderer = this.editor.render((editor) => {
+                    editor.events.on(
+                        'keydown',
+                        (e: KeyboardEvent) => {
+                            if (e.key == 'Enter' && editor.$el.atwho('isSelecting')) {
+                                return false;
+                            }
+
+                            if (e.key == 'Escape') {
+                                e.stopPropagation();
+                            }
+                        },
+                        true
+                    );
 
                     this.uploader?.setEditor(this);
                     this.uploader?.addEvent('update', (file: modules.attachment.Uploader.File) => {
@@ -287,7 +342,7 @@ namespace modules {
                         }
                     });
 
-                    $editor.on('froalaEditor.image.beforeUpload', (_e: any, editor: any, files: FileList) => {
+                    editor.$el.on('froalaEditor.image.beforeUpload', (_e: any, editor: any, files: FileList) => {
                         if (files.length == 0) {
                             return false;
                         }
@@ -308,7 +363,7 @@ namespace modules {
                         return false;
                     });
 
-                    $editor.on('froalaEditor.file.beforeUpload', (_e: any, editor: any, files: FileList) => {
+                    editor.$el.on('froalaEditor.file.beforeUpload', (_e: any, editor: any, files: FileList) => {
                         if (files.length == 0) {
                             return false;
                         }
@@ -329,7 +384,7 @@ namespace modules {
                         return false;
                     });
 
-                    $editor.on('froalaEditor.video.beforeUpload', (_e: any, editor: any, files: FileList) => {
+                    editor.$el.on('froalaEditor.video.beforeUpload', (_e: any, editor: any, files: FileList) => {
                         if (files.length == 0) {
                             return false;
                         }
@@ -349,6 +404,10 @@ namespace modules {
 
                         return false;
                     });
+
+                    if (typeof this.listeners.render == 'function') {
+                        this.listeners.render(this);
+                    }
                 });
             }
 
@@ -359,6 +418,24 @@ namespace modules {
              */
             getId(): string {
                 return this.id;
+            }
+
+            /**
+             * FroalaEditor 객체를 가져온다.
+             *
+             * @return {any} editor
+             */
+            getEditor(): any {
+                return this.editor.get();
+            }
+
+            /**
+             * FroalaEditor 의 DOM 객체를 가져온다.
+             *
+             * @return {any} $editor
+             */
+            $getEditor(): any {
+                return this.editor.get().$el;
             }
 
             /**
