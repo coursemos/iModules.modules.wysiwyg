@@ -46,7 +46,8 @@ div[data-module='wysiwyg'] {
     --im-wysiwyg-color-default: var(--im-color-foreground-500);
     --im-wysiwyg-color-help: var(--im-color-foreground-300);
     --im-wysiwyg-padding: var(--im-component-gap-default);
-    --im-wysiwyg-line-height: var(--im-component-line-height);
+
+    --im-wysiwyg-content-line-height: 1.6;
 
     textarea[data-role='editor'] {
         display: none;
@@ -57,7 +58,8 @@ div[data-module='wysiwyg'] {
         font-family: var(--im-wysiwyg-font-family);
         border: var(--im-wysiwyg-border-weight) solid var(--im-wysiwyg-border-color-default);
         border-top: 0;
-        background: var(--im-wysiwyg-background-default);
+        background: var(--im-wysiwyg-content-background-default);
+        color: var(--im-wysiwyg-content-color-default);
         box-sizing: border-box;
 
         &:has(*:focus) {
@@ -80,6 +82,7 @@ div[data-module='wysiwyg'] {
 
             .fr-view {
                 min-height: 200px;
+                line-height: var(--im-wysiwyg-content-line-height);
             }
 
             .fr-element {
@@ -151,7 +154,7 @@ div[data-module='wysiwyg'] {
                     }
 
                     &.fr-highlighted {
-                        border: 1px double red !important;
+                        border: 1px double var(--im-wysiwyg-content-table-body-border-color-highlighted) !important;
                     }
 
                     &.fr-thick {
@@ -163,9 +166,9 @@ div[data-module='wysiwyg'] {
             a[data-attachment-id] {
                 &.fr-uploading {
                     > small {
-                        width: calc(1em * var(--line-height-default));
-                        height: calc(1em * var(--line-height-default));
-                        font-size: var(--im-wysiwyg-font-size);
+                        width: 1lh;
+                        height: 1lh;
+                        font-size: inherit;
                         overflow: hidden;
                         position: relative;
                         color: transparent;
@@ -180,13 +183,11 @@ div[data-module='wysiwyg'] {
                             left: 0;
                             z-index: 1;
                             font-family: moimz;
-                            background: var(--im-wysiwyg-background-default);
                             width: 100%;
                             height: 100%;
-                            font-size: var(--im-wysiwyg-font-size);
+                            font-size: inherit;
                             text-align: center;
-                            line-height: calc(1em * var(--line-height-default));
-                            color: var(--im-wysiwyg-border-color-default);
+                            color: var(--im-wysiwyg-content-color-alternate);
                             content: '\ed00';
                             animation: mi-loading 2s infinite linear;
                         }
@@ -271,6 +272,7 @@ div[data-module='wysiwyg'] {
             }
         }
 
+        /*
         textarea.fr-code {
             display: none;
             width: 100%;
@@ -289,6 +291,7 @@ div[data-module='wysiwyg'] {
             color: var(--im-wysiwyg-color-default);
             outline: 0;
         }
+        */
 
         .CodeMirror {
             display: none;

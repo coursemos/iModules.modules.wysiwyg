@@ -8,9 +8,27 @@
  * @license MIT License
  * @modified 2024. 5. 13.
  */
-@import 'https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap';
-
 div[data-module='wysiwyg'] {
+    --im-wysiwyg-content-background-default: var(--im-color-background-500);
+    --im-wysiwyg-content-color-default: var(--im-color-foreground-500);
+    --im-wysiwyg-content-color-alternate: var(--im-color-foreground-300);
+
+    --im-wysiwyg-content-line-height: var(--im-component-line-height);
+    --im-wysiwyg-content-line-gap: var(--im-component-gap-small);
+
+    --im-wysiwyg-content-table-header-border-color-default: var(--im-color-foreground-300);
+    --im-wysiwyg-content-table-header-border-color-top: var(--im-color-foreground-500);
+    --im-wysiwyg-content-table-header-background-default: var(--im-color-background-300);
+    --im-wysiwyg-content-table-body-border-color-default: var(--im-color-foreground-200);
+    --im-wysiwyg-content-table-body-border-color-highlighted: var(--im-color-danger-500);
+    --im-wysiwyg-content-table-body-background-default: transparent;
+    --im-wysiwyg-content-table-body-background-alternate: var(--im-color-foreground-100);
+
+    --im-wysiwyg-content-link-color: var(--im-color-accent-500);
+
+    --im-wysiwyg-content-hr-color: var(--im-color-foreground-100);
+    --im-wysiwyg-content-pre-background: var(--im-color-background-400);
+
     position: relative;
     z-index: 5;
 
@@ -23,10 +41,24 @@ div[data-module='wysiwyg'] {
 
 div[data-module='wysiwyg'] div.fr-box,
 div[data-role='wysiwyg-content'] {
-    line-height: 1lh;
+    background: var(--im-wysiwyg-content-background-default);
+    color: var(--im-color-foreground-500);
+    font-size: inherit;
+    line-height: inherit;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p {
+        padding-block: var(--im-wysiwyg-content-line-gap);
+    }
 
     pre {
-        background: var(--color-background-400);
+        margin-block: var(--im-wysiwyg-content-line-gap);
+        background: var(--im-wysiwyg-content-pre-background);
         font-family: 'Nanum Gothic Coding' monospace;
 
         a {
@@ -44,12 +76,12 @@ div[data-role='wysiwyg-content'] {
 
         thead {
             tr {
-                border-top: 2px solid var(--color-text-500);
+                border-top: 2px solid var(--im-wysiwyg-content-table-header-border-color-top);
             }
 
             th {
-                background: var(--color-background-300);
-                border: 1px solid var(--color-background-100);
+                background: var(--im-wysiwyg-content-table-header-background-default);
+                border: 1px solid var(--im-wysiwyg-content-table-header-border-color-default);
                 padding: 2px 5px;
             }
         }
@@ -57,9 +89,10 @@ div[data-role='wysiwyg-content'] {
         tbody {
             tr {
                 td {
-                    border: 1px solid var(--color-background-200);
+                    border: 1px solid var(--im-wysiwyg-content-table-body-border-color-default);
                     padding: 2px 5px;
                     vertical-align: middle;
+                    background: var(--im-wysiwyg-content-table-body-background-default);
                 }
             }
         }
@@ -67,7 +100,7 @@ div[data-role='wysiwyg-content'] {
         th,
         td {
             &.fr-highlighted {
-                border: 1px double red;
+                border: 1px double var(--im-wysiwyg-content-table-body-border-color-highlighted);
             }
 
             &.fr-thick {
@@ -78,7 +111,7 @@ div[data-role='wysiwyg-content'] {
         &.fr-alternate-rows {
             tbody {
                 tr:nth-child(2n) {
-                    background: #f5f5f5;
+                    background: var(--im-wysiwyg-content-table-body-background-alternate);
                 }
             }
         }
@@ -130,7 +163,7 @@ div[data-role='wysiwyg-content'] {
     }
 
     a {
-        color: var(--im-color-accent-500);
+        color: var(--im-wysiwyg-content-link-color);
         text-decoration: none;
     }
 
@@ -159,7 +192,7 @@ div[data-role='wysiwyg-content'] {
 
         > span {
             font-weight: bold;
-            color: var(--im-color-accent-500);
+            color: var(--im-wysiwyg-content-link-color);
             height: calc(1em * 1lh);
             flex-shrink: 1;
             white-space: nowrap;
@@ -172,7 +205,7 @@ div[data-role='wysiwyg-content'] {
             font-size: 1em;
             height: calc(1em * 1lh);
             align-self: baseline;
-            color: var(--color-text-200);
+            color: var(--im-wysiwyg-content-color-alternate);
 
             &::before {
                 content: '(';
@@ -191,19 +224,19 @@ div[data-role='wysiwyg-content'] {
 
         &.default {
             margin: 16px 0px;
-            border-top: 1px solid var(--im-color-foreground-100);
+            border-top: 1px solid var(--im-wysiwyg-content-hr-color);
             height: 0;
         }
 
         &.dashed {
             margin: 16px 0px;
-            border-top: 1px dashed var(--im-color-foreground-100);
+            border-top: 1px dashed var(--im-wysiwyg-content-hr-color);
             height: 0;
         }
 
         &.bold {
             margin: 16px 0px;
-            border-top: 2px solid var(--im-color-foreground-100);
+            border-top: 2px solid var(--im-wysiwyg-content-hr-color);
             height: 0;
         }
 
@@ -213,7 +246,7 @@ div[data-role='wysiwyg-content'] {
             position: relative;
 
             &::after {
-                background: var(--im-color-foreground-100);
+                background: var(--im-wysiwyg-content-hr-color);
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -226,8 +259,8 @@ div[data-role='wysiwyg-content'] {
             &::before {
                 width: 11px;
                 height: 11px;
-                background: var(--im-color-background-500);
-                border: 1px solid var(--im-color-foreground-100);
+                background: var(--im-wysiwyg-background-default);
+                border: 1px solid var(--im-wysiwyg-content-hr-color);
                 position: absolute;
                 top: -6px;
                 left: 50%;
@@ -243,15 +276,15 @@ div[data-role='wysiwyg-content'] {
         &.diamond {
             height: 8px;
             margin: 16px 0px 8px 0;
-            border-top: 1px solid var(--im-color-foreground-100);
+            border-top: 1px solid var(--im-wysiwyg-content-hr-color);
             position: relative;
             overflow: visible;
 
             &::before {
                 width: 11px;
                 height: 11px;
-                background: var(--im-color-background-500);
-                border: 1px solid var(--im-color-foreground-100);
+                background: var(--im-wysiwyg-background-default);
+                border: 1px solid var(--im-wysiwyg-content-hr-color);
                 position: absolute;
                 top: -6px;
                 left: 50%;
@@ -393,5 +426,99 @@ div[data-role='wysiwyg-content'] {
         color: #bf360c;
         background: #ffe0b2;
         border: 1px solid #ffb74d;
+    }
+}
+
+div.atwho-container {
+    .atwho-view {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: none;
+        margin-top: 18px;
+        background: #fff;
+        color: #000;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        min-width: 120px;
+        z-index: 1111000 !important;
+    }
+    .atwho-view .atwho-header {
+        padding: 5px;
+        margin: 5px;
+        cursor: pointer;
+        border-bottom: solid 1px #eaeff1;
+        color: #6f8092;
+        font-size: 11px;
+        font-weight: 700;
+    }
+    .atwho-view .atwho-header .small {
+        color: #6f8092;
+        float: right;
+        padding-top: 2px;
+        margin-right: -5px;
+        font-size: 12px;
+        font-weight: 400;
+    }
+    .atwho-view .atwho-header:hover {
+        cursor: default;
+    }
+    .atwho-view .cur {
+        background: #36f;
+        color: #fff;
+    }
+    .atwho-view .cur small {
+        color: #fff;
+    }
+    .atwho-view strong {
+        color: #36f;
+    }
+    .atwho-view .cur strong {
+        color: #fff;
+        font: 700;
+    }
+    .atwho-view ul {
+        list-style: none;
+        padding: 0;
+        margin: auto;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .atwho-view ul li {
+        display: block;
+        padding: 5px 10px;
+        border-bottom: 1px solid #ddd;
+        cursor: pointer;
+        height: 32px;
+        line-height: 22px;
+    }
+    .atwho-view ul li i {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        vertical-align: top;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        margin-right: 6px;
+        float: left;
+    }
+    .atwho-view ul li:after {
+        content: ' ';
+        clear: both;
+        display: block;
+    }
+    .atwho-view small {
+        font-size: smaller;
+        color: #777;
+        font-weight: 400;
+    }
+    .atwho-inserted {
+        font-weight: bold;
+        color: #36f;
     }
 }

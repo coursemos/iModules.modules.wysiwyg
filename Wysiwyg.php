@@ -134,6 +134,7 @@ class Wysiwyg extends \Module
         \Html::font('bootstrap');
         \Html::script(self::getBase() . '/scripts/FroalaEditor.js');
         \Html::style(self::getBase() . '/styles/FroalaEditor.css');
+        \Html::style('//fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap');
 
         self::$_isEditorLoaded = true;
     }
