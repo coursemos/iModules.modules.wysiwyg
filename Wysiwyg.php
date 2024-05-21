@@ -49,11 +49,16 @@ class Wysiwyg extends \Module
      * 데이터베이스에 저장된 에디터 콘텐츠를 화면상에 출력하기 위한 콘텐츠로 변환한다.
      *
      * @param string $content 데이터베이스에 저장된 콘텐츠
+     * @param bool $is_purifier HTML 화이트리스트 적용여부
+     * @param bool $is_full_url 본문 첨부파일 경로를 도메인을 포함한 전체 URL 을 사용할지 여부
      * @return \modules\wysiwyg\dtos\ViewerContent $content 뷰어 콘텐츠 객체
      */
-    public function getViewerContent(string|object $content): \modules\wysiwyg\dtos\ViewerContent
-    {
-        return new \modules\wysiwyg\dtos\ViewerContent($content);
+    public function getViewerContent(
+        string|object $content,
+        bool $is_purifier = true,
+        bool $is_full_url = false
+    ): \modules\wysiwyg\dtos\ViewerContent {
+        return new \modules\wysiwyg\dtos\ViewerContent($content, $is_purifier, $is_full_url);
     }
 
     /**

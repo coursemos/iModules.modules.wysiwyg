@@ -28,11 +28,21 @@ class ViewerContent
     private array $_attachments;
 
     /**
+     * @var bool $is_purifier HTML 필터적용여부
+     */
+    private bool $_is_purifier;
+
+    /**
+     * @var bool $is_full_url 본문내 첨부파일 경로의 전체 URL 여부
+     */
+    private bool $_is_full_url;
+
+    /**
      * 에디터 콘텐츠 구조체를 정의한다.
      *
      * @param object|string $origin 데이터베이스에 저장된 콘텐츠 원본
      */
-    public function __construct(object|string $origin)
+    public function __construct(object|string $origin, bool $is_purifier = true, bool $is_full_url = false)
     {
         if (is_string($origin) == true) {
             $json = json_decode($origin);
@@ -45,6 +55,9 @@ class ViewerContent
         } else {
             $this->_origin = $origin;
         }
+
+        $this->_is_purifier = $is_purifier;
+        $this->_is_full_url = $is_full_url;
     }
 
     /**
@@ -88,7 +101,7 @@ class ViewerContent
                 }
 
                 $insert = \Html::element('img', [
-                    'src' => $attachment->getUrl('view', true),
+                    'src' => $attachment->getUrl('view', $this->_is_full_url),
                     'data-attachment-id' => $attachment_id,
                     'class' => $class,
                     'style' => $style,
@@ -134,7 +147,7 @@ class ViewerContent
                 $insert = \Html::element(
                     'video',
                     [
-                        'src' => $attachment->getUrl('view', true),
+                        'src' => $attachment->getUrl('view', $this->_is_full_url),
                         'data-attachment-id' => $attachment_id,
                         'controls' => '1',
                         'class' => $class,
@@ -169,9 +182,12 @@ class ViewerContent
                     'data-attachment-id' => $attachment_id,
                     'data-module' => 'attachment',
                     'download' => $attachment->getName(),
-                    'class' => 'fr-deletable',
-                    'contenteditable' => 'false',
                 ];
+
+                if ($this->_is_purifier == false) {
+                    $attributes['class'] = 'fr-deletable';
+                    $attributes['contenteditable'] = 'fr-false';
+                }
 
                 $insert = \Html::element(
                     'a',
@@ -201,6 +217,14 @@ class ViewerContent
             }
         }
 
+        if ($this->_is_purifier === true) {
+            /**
+             * @var \modules\wysiwyg\Wysiwyg $mWysiwyg
+             */
+            $mWysiwyg = \Modules::get('wysiwyg');
+            $content = $mWysiwyg->getHtmlPurifier()->purify($content);
+        }
+
         $this->_content = $content;
         $this->_attachments = $oAttachments;
     }
@@ -208,30 +232,15 @@ class ViewerContent
     /**
      * 데이터베이스에 저장하기 위해 가공한 콘텐츠를 가져온다.
      *
-     * @param bool $is_purifier HTML 화이트리스트 적용여부
-     * @param bool $is_full_url 본문 첨부파일 경로를 도메인을 포함한 전체 URL 을 사용할지 여부
      * @return string $content
      */
-    public function getContent(bool $is_purifier = true, bool $is_full_url = false): string
+    public function getContent(): string
     {
         if (isset($this->_content) == false) {
             $this->parse();
         }
 
-        $content = $this->_content;
-        if ($is_full_url == false) {
-            $content = str_replace(\Domains::get()->getUrl(false), '', $content);
-        }
-
-        if ($is_purifier === true) {
-            /**
-             * @var \modules\wysiwyg\Wysiwyg $mWysiwyg
-             */
-            $mWysiwyg = \Modules::get('wysiwyg');
-            return $mWysiwyg->getHtmlPurifier()->purify($content);
-        }
-
-        return $content;
+        return $this->_content;
     }
 
     /**
