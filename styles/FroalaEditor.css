@@ -39,7 +39,7 @@ div[data-module='wysiwyg'] {
 
     --im-wysiwyg-tooltip-background: var(--im-color-foreground-400);
     --im-wysiwyg-tooltip-color: var(--im-color-background-500);
-    --im-wysiwyg-tooltip-font-size: calc(var(--im-wysiwyg-button-icon-size) * 0.6);
+    --im-wysiwyg-tooltip-font-size: calc(var(--im-wysiwyg-button-icon-size) * 0.8);
 
     --im-wysiwyg-font-size: var(--im-font-size-default);
     --im-wysiwyg-font-family: var(--im-font-family-body);
@@ -49,7 +49,7 @@ div[data-module='wysiwyg'] {
 
     --im-wysiwyg-content-line-height: 1.6;
 
-    textarea[data-role='editor'] {
+    textarea {
         display: none;
         opacity: 0;
     }
@@ -101,6 +101,7 @@ div[data-module='wysiwyg'] {
                 width: 100%;
                 z-index: -1;
                 display: none;
+                margin-block: var(--im-wysiwyg-content-line-gap);
                 top: 0;
                 left: 0;
                 right: 0;

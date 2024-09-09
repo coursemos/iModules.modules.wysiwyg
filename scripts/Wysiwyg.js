@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 5. 13.
+ * @modified 2024. 9. 8.
  */
 var modules;
 (function (modules) {
@@ -69,7 +69,7 @@ var modules;
                     properties.toolbarButtonsMD =
                         properties.toolbarButtonsSM =
                             properties.toolbarButtonsXS =
-                                [
+                                properties.toolbars ?? [
                                     'html',
                                     '|',
                                     'bold',
@@ -531,6 +531,16 @@ var modules;
                 this.renderer.then(($editor) => {
                     $editor.froalaEditor('html.set', data?.content ?? '');
                     this.uploader.setValue(data?.attachments ?? []);
+                });
+            }
+            /**
+             * 에디터에 포커스를 지정한다.
+             */
+            focus() {
+                this.renderer.then(($editor) => {
+                    const editor = $editor.data('froala.editor');
+                    editor.selection.setAtEnd(editor.$el.get(0));
+                    editor.selection.restore();
                 });
             }
             /**

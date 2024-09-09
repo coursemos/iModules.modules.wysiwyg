@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 5. 13.
+ * @modified 2024. 9. 8.
  */
 namespace modules {
     export namespace wysiwyg {
@@ -54,6 +54,11 @@ namespace modules {
                 uploader?: modules.attachment.Uploader;
 
                 /**
+                 * @type {string[]} toolbars - 툴바
+                 */
+                toolbars?: string[];
+
+                /**
                  * @type {Object} listeners - 이벤트리스너
                  */
                 listeners?: {
@@ -91,7 +96,6 @@ namespace modules {
              */
             constructor($textarea: Dom, properties: modules.wysiwyg.Editor.Properties = null) {
                 this.$textarea = $textarea;
-
                 properties ??= {};
 
                 this.id = this.$textarea.getAttr('data-id');
@@ -104,7 +108,7 @@ namespace modules {
                     properties.toolbarButtonsMD =
                     properties.toolbarButtonsSM =
                     properties.toolbarButtonsXS =
-                        [
+                        properties.toolbars ?? [
                             'html',
                             '|',
                             'bold',
@@ -629,6 +633,17 @@ namespace modules {
                 this.renderer.then(($editor) => {
                     $editor.froalaEditor('html.set', data?.content ?? '');
                     this.uploader.setValue(data?.attachments ?? []);
+                });
+            }
+
+            /**
+             * 에디터에 포커스를 지정한다.
+             */
+            focus(): void {
+                this.renderer.then(($editor) => {
+                    const editor = $editor.data('froala.editor');
+                    editor.selection.setAtEnd(editor.$el.get(0));
+                    editor.selection.restore();
                 });
             }
 
