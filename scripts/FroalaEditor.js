@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/FroalaEditor.js
  * @author Arzz <arzz@arzz.com>
  * @license copyright
- * @modified 2024. 2. 9.
+ * @modified 2024. 9. 12.
  */
 var modules;
 (function (modules) {
@@ -324,7 +324,7 @@ var modules;
                     this.$editor.on('froalaEditor.initialized', (e, editor) => {
                         this.editor = editor;
                         if (typeof callback == 'function') {
-                            callback(editor);
+                            callback(editor, this.$editor);
                         }
                     });
                     this.$editor = this.$editor.froalaEditor(this.options);
