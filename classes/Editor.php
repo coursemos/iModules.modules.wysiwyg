@@ -48,6 +48,21 @@ class Editor
     private ?string $_content = null;
 
     /**
+     * @var bool $_imageUpload 이미지 업로드 여부
+     */
+    private bool $_imageUpload = true;
+
+    /**
+     * @var bool $_fileUpload 파일 업로드 여부
+     */
+    private bool $_fileUpload = true;
+
+    /**
+     * @var bool $_videoUpload 비디오 업로드 여부
+     */
+    private bool $_videoUpload = true;
+
+    /**
      * @var bool $_required 위지윅에디터 필수입력 여부
      */
     private bool $_required = false;
@@ -153,9 +168,45 @@ class Editor
      * @param string $placeholder placeholder 텍스트
      * @return \modules\wysiwyg\Editor $this
      */
-    function setPlaceholder(?string $placeholder = null): \modules\wysiwyg\Editor
+    public function setPlaceholder(?string $placeholder = null): \modules\wysiwyg\Editor
     {
         $this->_placeholder = $placeholder;
+        return $this;
+    }
+
+    /**
+     * 이미지 업로드 허용 여부를 설정한다.
+     *
+     * @param bool $imageUpload 업로드 허용여부
+     * @return \modules\wysiwyg\Editor $this
+     */
+    public function setImageUpload(bool $imageUpload): \modules\wysiwyg\Editor
+    {
+        $this->_imageUpload = $imageUpload;
+        return $this;
+    }
+
+    /**
+     * 파일 업로드 허용 여부를 설정한다.
+     *
+     * @param bool $fileUpload 파일 허용여부
+     * @return \modules\wysiwyg\Editor $this
+     */
+    public function setFileUpload(bool $fileUpload): \modules\wysiwyg\Editor
+    {
+        $this->_fileUpload = $fileUpload;
+        return $this;
+    }
+
+    /**
+     * 비디오 업로드 허용 여부를 설정한다.
+     *
+     * @param bool $videoUpload 파일 허용여부
+     * @return \modules\wysiwyg\Editor $this
+     */
+    public function setVideoUpload(bool $videoUpload): \modules\wysiwyg\Editor
+    {
+        $this->_videoUpload = $videoUpload;
         return $this;
     }
 
@@ -203,12 +254,35 @@ class Editor
             'data-width' => $this->_width,
             'data-height' => $this->_height,
             'data-placeholder' => $this->_placeholder ?? '',
+            'data-image-upload' => $this->_imageUpload == true ? 'true' : 'false',
+            'data-file-upload' => $this->_fileUpload == true ? 'true' : 'false',
+            'data-video-upload' => $this->_videoUpload == true ? 'true' : 'false',
             'data-required' => $this->_required == true ? 'true' : 'false',
             'data-disabled' => $this->_disabled == true ? 'true' : 'false',
         ];
+
         if ($this->_maxHeight !== null) {
             $properties['data-max-height'] = $this->_maxHeight;
         }
+
+        if ($this->_imageUpload == true || $this->_fileUpload == true) {
+            if ($this->getUploader() === null) {
+                /**
+                 * @var \modules\attachment\Attachment $mAttachment
+                 */
+                $mAttachment = \Modules::get('attachment');
+                $template = new \stdClass();
+                $template->name = 'hidden';
+                $uploader = $mAttachment
+                    ->getUploader()
+                    ->setName('attachments')
+                    ->setTemplate($template);
+                $this->setUploader($uploader);
+            }
+        } else {
+            $this->setUploader(null);
+        }
+
         if ($this->getUploader() !== null) {
             $properties['data-uploader-id'] = $this->getUploader()->getId();
             $properties['data-uploader-name'] = $this->getUploader()->getName();
