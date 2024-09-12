@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 8.
+ * @modified 2024. 9. 12.
  */
 var modules;
 (function (modules) {
@@ -62,6 +62,41 @@ var modules;
                 properties ??= {};
                 this.id = this.$textarea.getAttr('data-id');
                 this.listeners = properties.listeners ?? {};
+                const imageUpload = properties.imageUpload ?? this.$textarea.getAttr('data-image-upload') === 'true';
+                const fileUpload = properties.fileUpload ?? this.$textarea.getAttr('data-file-upload') === 'true';
+                const videoUpload = properties.videoUpload ?? this.$textarea.getAttr('data-video-upload') === 'true';
+                let toolbars = properties.toolbars ?? [
+                    'html',
+                    '|',
+                    'bold',
+                    'underline',
+                    'fontOptions',
+                    'color',
+                    '|',
+                    'paragraphFormat',
+                    'paragraphStyle',
+                    'Hr',
+                    'align',
+                    'formatOL',
+                    'formatUL',
+                    'quote',
+                    '|',
+                    'insertLink',
+                    'insertTable',
+                    'insertImage',
+                    'insertVideo',
+                    'insertFile',
+                    'emoticons',
+                ];
+                if (imageUpload == false) {
+                    toolbars.splice(toolbars.indexOf('insertImage'), 1);
+                }
+                if (fileUpload == false) {
+                    toolbars.splice(toolbars.indexOf('insertFile'), 1);
+                }
+                if (videoUpload == false) {
+                    toolbars.splice(toolbars.indexOf('insertVideo'), 1);
+                }
                 properties.scrollableContainer = 'div[data-module=wysiwyg]';
                 properties.tooltips = false;
                 properties.toolbarSticky = false;
@@ -69,29 +104,7 @@ var modules;
                     properties.toolbarButtonsMD =
                         properties.toolbarButtonsSM =
                             properties.toolbarButtonsXS =
-                                properties.toolbars ?? [
-                                    'html',
-                                    '|',
-                                    'bold',
-                                    'underline',
-                                    'fontOptions',
-                                    'color',
-                                    '|',
-                                    'paragraphFormat',
-                                    'paragraphStyle',
-                                    'Hr',
-                                    'align',
-                                    'formatOL',
-                                    'formatUL',
-                                    'quote',
-                                    '|',
-                                    'insertLink',
-                                    'insertTable',
-                                    'insertImage',
-                                    'insertVideo',
-                                    'insertFile',
-                                    'emoticons',
-                                ];
+                                toolbars;
                 properties.imageDefaultWidth = 0;
                 properties.imageAddNewLine = true;
                 properties.imageEditButtons = [
@@ -126,7 +139,7 @@ var modules;
                     'fr-font-large': 'Large Font',
                     'fr-box-notice': 'Notice Box',
                 };
-                properties.videoUpload = true;
+                properties.videoUpload = videoUpload;
                 properties.imageCORSProxy = '/module/wysiwyg/process/cors/';
                 properties.codeBeautifierOptions = {
                     end_with_newline: true,
@@ -260,7 +273,7 @@ var modules;
                 if (this.uploader == null && $textarea.getAttr('data-uploader-id')) {
                     this.uploader = attachment.getUploader(Html.get('div[data-role=uploader][data-id="' + $textarea.getAttr('data-uploader-id') + '"]'));
                 }
-                this.renderer = this.editor.render((editor) => {
+                this.renderer = this.editor.render((editor, $editor) => {
                     editor.events.on('keydown', (e) => {
                         if (e.key == 'Enter' && editor.$el.atwho('isSelecting')) {
                             return false;
@@ -286,20 +299,28 @@ var modules;
                                     $placeholder.replaceWith(this.getVideoPlayer(file));
                                 }
                             }
+                            if (file.status == 'FAIL') {
+                                $placeholder.remove();
+                            }
                         }
                         const $uploading = this.editor.$('*[data-attachment-id].fr-uploading', this.editor.get().$el);
                         if ($uploading.length == 0) {
                             this.editor.get().edit.on();
                         }
                     });
-                    editor.$el.on('froalaEditor.image.beforeUpload', (_e, editor, files) => {
-                        if (files.length == 0) {
+                    $editor.on('froalaEditor.image.beforePasteUpload', (_e, _editor, img) => {
+                        img.remove();
+                        return imageUpload;
+                    });
+                    $editor.on('froalaEditor.image.beforeUpload', (_e, editor, files) => {
+                        if (imageUpload == false || files.length == 0 || this.uploader === null) {
+                            editor.popups.hideAll();
                             return false;
                         }
                         editor.edit.off();
                         editor.events.focus(true);
                         editor.selection.restore();
-                        const attachments = this.uploader.add(files);
+                        const attachments = this.uploader.add(files, 'image');
                         for (const attachment of attachments) {
                             const placeholder = this.getImage(attachment);
                             editor.html.insert(placeholder);
@@ -308,8 +329,9 @@ var modules;
                         editor.popups.hideAll();
                         return false;
                     });
-                    editor.$el.on('froalaEditor.file.beforeUpload', (_e, editor, files) => {
-                        if (files.length == 0) {
+                    $editor.on('froalaEditor.file.beforeUpload', (_e, editor, files) => {
+                        if (fileUpload == false || files.length == 0 || this.uploader === null) {
+                            editor.popups.hideAll();
                             return false;
                         }
                         editor.edit.off();
@@ -324,8 +346,8 @@ var modules;
                         editor.popups.hideAll();
                         return false;
                     });
-                    editor.$el.on('froalaEditor.video.beforeUpload', (_e, editor, files) => {
-                        if (files.length == 0) {
+                    $editor.on('froalaEditor.video.beforeUpload', (_e, editor, files) => {
+                        if (fileUpload == false || files.length == 0 || this.uploader === null) {
                             return false;
                         }
                         editor.edit.off();
@@ -497,7 +519,7 @@ var modules;
              * @return {string[]} attachment_ids - 첨부파일 고유값
              */
             getAttachments() {
-                return this.uploader.getValue();
+                return this.uploader?.getValue() ?? [];
             }
             /**
              * 첨부파일을 제거한다.

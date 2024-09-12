@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 8.
+ * @modified 2024. 9. 12.
  */
 namespace modules {
     export namespace wysiwyg {
@@ -74,7 +74,7 @@ namespace modules {
 
         export declare class FroalaEditor {
             public constructor(textarea: HTMLElement, options: modules.wysiwyg.Editor.Properties);
-            public render(callback: (editor: any) => void): Promise<any>;
+            public render(callback: (editor: any, $editor: any) => void): Promise<any>;
             public get(): any;
             public $get(): any;
             public $: any;
@@ -101,6 +101,46 @@ namespace modules {
                 this.id = this.$textarea.getAttr('data-id');
                 this.listeners = properties.listeners ?? {};
 
+                const imageUpload = properties.imageUpload ?? this.$textarea.getAttr('data-image-upload') === 'true';
+                const fileUpload = properties.fileUpload ?? this.$textarea.getAttr('data-file-upload') === 'true';
+                const videoUpload = properties.videoUpload ?? this.$textarea.getAttr('data-video-upload') === 'true';
+
+                let toolbars = properties.toolbars ?? [
+                    'html',
+                    '|',
+                    'bold',
+                    'underline',
+                    'fontOptions',
+                    'color',
+                    '|',
+                    'paragraphFormat',
+                    'paragraphStyle',
+                    'Hr',
+                    'align',
+                    'formatOL',
+                    'formatUL',
+                    'quote',
+                    '|',
+                    'insertLink',
+                    'insertTable',
+                    'insertImage',
+                    'insertVideo',
+                    'insertFile',
+                    'emoticons',
+                ];
+
+                if (imageUpload == false) {
+                    toolbars.splice(toolbars.indexOf('insertImage'), 1);
+                }
+
+                if (fileUpload == false) {
+                    toolbars.splice(toolbars.indexOf('insertFile'), 1);
+                }
+
+                if (videoUpload == false) {
+                    toolbars.splice(toolbars.indexOf('insertVideo'), 1);
+                }
+
                 properties.scrollableContainer = 'div[data-module=wysiwyg]';
                 properties.tooltips = false;
                 properties.toolbarSticky = false;
@@ -108,29 +148,7 @@ namespace modules {
                     properties.toolbarButtonsMD =
                     properties.toolbarButtonsSM =
                     properties.toolbarButtonsXS =
-                        properties.toolbars ?? [
-                            'html',
-                            '|',
-                            'bold',
-                            'underline',
-                            'fontOptions',
-                            'color',
-                            '|',
-                            'paragraphFormat',
-                            'paragraphStyle',
-                            'Hr',
-                            'align',
-                            'formatOL',
-                            'formatUL',
-                            'quote',
-                            '|',
-                            'insertLink',
-                            'insertTable',
-                            'insertImage',
-                            'insertVideo',
-                            'insertFile',
-                            'emoticons',
-                        ];
+                        toolbars;
 
                 properties.imageDefaultWidth = 0;
                 properties.imageAddNewLine = true;
@@ -147,6 +165,7 @@ namespace modules {
                     'imageAlt',
                     'imageSize',
                 ];
+
                 properties.tableEditButtons = [
                     'tableHeader',
                     'tableRemove',
@@ -166,7 +185,7 @@ namespace modules {
                     'fr-font-large': 'Large Font',
                     'fr-box-notice': 'Notice Box',
                 };
-                properties.videoUpload = true;
+                properties.videoUpload = videoUpload;
                 properties.imageCORSProxy = '/module/wysiwyg/process/cors/';
                 properties.codeBeautifierOptions = {
                     end_with_newline: true,
@@ -296,7 +315,6 @@ namespace modules {
                 properties.linkList = [];
 
                 this.editor = new modules.wysiwyg.FroalaEditor($textarea.getEl(), properties);
-
                 this.uploader = properties.uploader ?? null;
 
                 const attachment = Modules.get('attachment') as modules.attachment.Attachment;
@@ -306,7 +324,7 @@ namespace modules {
                     );
                 }
 
-                this.renderer = this.editor.render((editor) => {
+                this.renderer = this.editor.render((editor, $editor) => {
                     editor.events.on(
                         'keydown',
                         (e: KeyboardEvent) => {
@@ -327,7 +345,6 @@ namespace modules {
                         const $placeholder = this.editor.$(selector, this.editor.get().$el);
                         if ($placeholder.length == 1) {
                             $placeholder.attr('data-attachment-id', file.attachment.id ?? 'UPLOADING');
-
                             if (file.status == 'COMPLETE') {
                                 if ($placeholder.is('img') == true) {
                                     $placeholder.replaceWith(this.getImage(file));
@@ -336,6 +353,10 @@ namespace modules {
                                 } else if ($placeholder.is('video') == true) {
                                     $placeholder.replaceWith(this.getVideoPlayer(file));
                                 }
+                            }
+
+                            if (file.status == 'FAIL') {
+                                $placeholder.remove();
                             }
                         }
 
@@ -346,8 +367,17 @@ namespace modules {
                         }
                     });
 
-                    editor.$el.on('froalaEditor.image.beforeUpload', (_e: any, editor: any, files: FileList) => {
-                        if (files.length == 0) {
+                    $editor.on(
+                        'froalaEditor.image.beforePasteUpload',
+                        (_e: any, _editor: any, img: HTMLImageElement) => {
+                            img.remove();
+                            return imageUpload;
+                        }
+                    );
+
+                    $editor.on('froalaEditor.image.beforeUpload', (_e: any, editor: any, files: FileList) => {
+                        if (imageUpload == false || files.length == 0 || this.uploader === null) {
+                            editor.popups.hideAll();
                             return false;
                         }
 
@@ -355,7 +385,7 @@ namespace modules {
                         editor.events.focus(true);
                         editor.selection.restore();
 
-                        const attachments = this.uploader.add(files);
+                        const attachments = this.uploader.add(files, 'image');
                         for (const attachment of attachments) {
                             const placeholder = this.getImage(attachment);
                             editor.html.insert(placeholder);
@@ -367,8 +397,9 @@ namespace modules {
                         return false;
                     });
 
-                    editor.$el.on('froalaEditor.file.beforeUpload', (_e: any, editor: any, files: FileList) => {
-                        if (files.length == 0) {
+                    $editor.on('froalaEditor.file.beforeUpload', (_e: any, editor: any, files: FileList) => {
+                        if (fileUpload == false || files.length == 0 || this.uploader === null) {
+                            editor.popups.hideAll();
                             return false;
                         }
 
@@ -388,8 +419,8 @@ namespace modules {
                         return false;
                     });
 
-                    editor.$el.on('froalaEditor.video.beforeUpload', (_e: any, editor: any, files: FileList) => {
-                        if (files.length == 0) {
+                    $editor.on('froalaEditor.video.beforeUpload', (_e: any, editor: any, files: FileList) => {
+                        if (fileUpload == false || files.length == 0 || this.uploader === null) {
                             return false;
                         }
 
@@ -589,7 +620,7 @@ namespace modules {
              * @return {string[]} attachment_ids - 첨부파일 고유값
              */
             getAttachments(): string[] {
-                return this.uploader.getValue();
+                return this.uploader?.getValue() ?? [];
             }
 
             /**
