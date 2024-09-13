@@ -39,7 +39,7 @@ div[data-module='wysiwyg'] {
 
     --im-wysiwyg-tooltip-background: var(--im-color-foreground-400);
     --im-wysiwyg-tooltip-color: var(--im-color-background-500);
-    --im-wysiwyg-tooltip-font-size: calc(var(--im-wysiwyg-button-icon-size) * 0.8);
+    --im-wysiwyg-tooltip-font-size: calc(var(--im-wysiwyg-button-icon-size) * 0.75);
 
     --im-wysiwyg-font-size: var(--im-font-size-default);
     --im-wysiwyg-font-family: var(--im-font-family-body);
