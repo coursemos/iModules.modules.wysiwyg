@@ -42,6 +42,8 @@ div[data-module='wysiwyg'] {
     --im-wysiwyg-tooltip-color: var(--im-color-background-500);
     --im-wysiwyg-tooltip-font-size: calc(var(--im-wysiwyg-button-icon-size) * 0.75);
 
+    --im-wysiwyg-command-font-size: calc(var(--im-font-size-default) * 0.875);
+
     --im-wysiwyg-font-size: var(--im-font-size-default);
     --im-wysiwyg-font-family: var(--im-font-family-body);
     --im-wysiwyg-color-default: var(--im-color-foreground-500);
@@ -49,6 +51,8 @@ div[data-module='wysiwyg'] {
     --im-wysiwyg-padding: var(--im-component-gap-default);
 
     --im-wysiwyg-content-line-height: 1.6;
+
+    font-size: var(--im-font-size-default);
 
     textarea {
         display: none;
@@ -83,6 +87,7 @@ div[data-module='wysiwyg'] {
 
             .fr-view {
                 line-height: var(--im-wysiwyg-content-line-height);
+                font-family: var(--im-wysiwyg-font-family);
             }
 
             .fr-scroll {
@@ -100,6 +105,7 @@ div[data-module='wysiwyg'] {
                 position: absolute;
                 color: var(--im-wysiwyg-color-help);
                 padding: var(--im-wysiwyg-padding);
+                font-family: var(--im-wysiwyg-font-family);
                 font-size: var(--im-wysiwyg-font-size);
                 line-height: var(--im-wysiwyg-line-height);
                 width: 100%;
@@ -825,6 +831,7 @@ div[data-module='wysiwyg'] {
                     left: 50%;
                     background: var(--im-wysiwyg-tooltip-background);
                     color: var(--im-wysiwyg-tooltip-color);
+                    font-family: var(--im-wysiwyg-font-family);
                     font-size: var(--im-wysiwyg-tooltip-font-size);
                     padding: calc(var(--im-wysiwyg-tooltip-font-size) / 2);
                     transform: translateX(-50%);
@@ -1018,7 +1025,7 @@ div[data-module='wysiwyg'] {
                             > li {
                                 padding: 0;
                                 margin: 0;
-                                font-size: var(--im-wysiwyg-font-size);
+                                font-family: var(--im-wysiwyg-font-family);
 
                                 &:hover {
                                     background: var(--im-wysiwyg-button-background-hover) !important;
@@ -1037,6 +1044,7 @@ div[data-module='wysiwyg'] {
                                     color: inherit;
                                     text-decoration: none;
                                     overflow: auto;
+                                    font-size: var(--im-wysiwyg-command-font-size);
 
                                     > i {
                                         width: var(--im-wysiwyg-button-height);
@@ -1050,7 +1058,6 @@ div[data-module='wysiwyg'] {
                                         display: inline-block;
                                         padding-right: 12px;
                                         vertical-align: middle;
-                                        font-size: var(--im-wysiwyg-button-font-size);
                                         line-height: var(--im-wysiwyg-button-height);
 
                                         &.fr-shortcut {
@@ -1197,6 +1204,8 @@ div[data-module='wysiwyg'] {
         z-index: 2147483635;
         text-align: left;
         line-height: 1.2;
+        font-family: var(--im-wysiwyg-font-family);
+        font-family: var(--im-wysiwyg-font-size);
 
         &::before {
             width: calc(100% + var(--im-wysiwyg-border-weight) * 2);
@@ -1287,6 +1296,8 @@ div[data-module='wysiwyg'] {
             box-sizing: border-box;
             display: none;
             width: 225px;
+            font-size: var(--im-wysiwyg-font-size);
+            font-family: var(--im-wysiwyg-font-family);
 
             &.fr-link-insert-layer,
             &.fr-image-upload-layer,
@@ -1307,7 +1318,8 @@ div[data-module='wysiwyg'] {
 
             &.fr-error {
                 h3 {
-                    font-size: 16px;
+                    font-size: var(--im-wysiwyg-font-size);
+                    font-family: var(--im-wysiwyg-font-family);
                     margin: 10px 0;
                     font-weight: 400;
                 }
@@ -1374,6 +1386,7 @@ div[data-module='wysiwyg'] {
 
             .fr-checkbox-line {
                 font-size: var(--im-wysiwyg-font-size);
+                font-family: var(--im-wysiwyg-font-family);
                 line-height: var(--im-wysiwyg-line-height);
                 margin-top: 10px;
 
@@ -1381,6 +1394,7 @@ div[data-module='wysiwyg'] {
                     cursor: pointer;
                     margin: 0 5px;
                     vertical-align: middle;
+                    font-family: inherit;
                 }
 
                 > .fr-checkbox {

@@ -419,13 +419,14 @@ div[data-role='wysiwyg-content'] {
     }
 
     .fr-font-large {
-        font-size: 1.2em;
+        font-size: 1.2rem;
     }
 
     .fr-box-notice {
         padding: 8px;
         color: #bf360c;
         background: #ffe0b2;
+        font-size: 1rem;
         border: 1px solid #ffb74d;
     }
 }
