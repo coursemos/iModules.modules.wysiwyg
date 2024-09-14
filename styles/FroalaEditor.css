@@ -82,8 +82,11 @@ div[data-module='wysiwyg'] {
             left: 0;
 
             .fr-view {
-                min-height: 200px;
                 line-height: var(--im-wysiwyg-content-line-height);
+            }
+
+            .fr-scroll {
+                overflow-y: auto;
             }
 
             .fr-element {
@@ -1766,10 +1769,10 @@ div[data-module='wysiwyg'] {
         }
 
         .fr-toolbar {
-            border-color: var(--im-wysiwyg-border-color-error);
+            border-color: var(--im-wysiwyg-border-color-error) !important;
 
             &::before {
-                border-color: var(--im-wysiwyg-border-color-error);
+                border-color: var(--im-wysiwyg-border-color-error) !important;
             }
         }
 

@@ -65,6 +65,12 @@ var modules;
                 const imageUpload = properties.imageUpload ?? this.$textarea.getAttr('data-image-upload') === 'true';
                 const fileUpload = properties.fileUpload ?? this.$textarea.getAttr('data-file-upload') === 'true';
                 const videoUpload = properties.videoUpload ?? this.$textarea.getAttr('data-video-upload') === 'true';
+                const height = properties.height ??
+                    (this.$textarea.getAttr('data-height') ? parseInt(this.$textarea.getAttr('data-height'), 10) : 150);
+                const maxHeight = properties.maxHeight ??
+                    (this.$textarea.getAttr('data-max-height')
+                        ? parseInt(this.$textarea.getAttr('data-max-height'), 10)
+                        : null);
                 let toolbars = properties.toolbars ?? [
                     'html',
                     '|',
@@ -362,6 +368,11 @@ var modules;
                         editor.popups.hideAll();
                         return false;
                     });
+                    editor.$el.css('minHeight', height + 'px');
+                    if (maxHeight !== null) {
+                        editor.$el.addClass('fr-scroll');
+                        editor.$el.css('maxHeight', maxHeight + 'px');
+                    }
                     if (typeof this.listeners.render == 'function') {
                         this.listeners.render(this);
                     }

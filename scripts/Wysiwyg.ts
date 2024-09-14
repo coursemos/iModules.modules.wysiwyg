@@ -59,6 +59,16 @@ namespace modules {
                 toolbars?: string[];
 
                 /**
+                 * @type {number} height - 높이
+                 */
+                height?: number;
+
+                /**
+                 * @type {number} maxHeight - 최대높이
+                 */
+                maxHeight?: number;
+
+                /**
                  * @type {Object} listeners - 이벤트리스너
                  */
                 listeners?: {
@@ -104,6 +114,15 @@ namespace modules {
                 const imageUpload = properties.imageUpload ?? this.$textarea.getAttr('data-image-upload') === 'true';
                 const fileUpload = properties.fileUpload ?? this.$textarea.getAttr('data-file-upload') === 'true';
                 const videoUpload = properties.videoUpload ?? this.$textarea.getAttr('data-video-upload') === 'true';
+                const height =
+                    properties.height ??
+                    (this.$textarea.getAttr('data-height') ? parseInt(this.$textarea.getAttr('data-height'), 10) : 150);
+
+                const maxHeight =
+                    properties.maxHeight ??
+                    (this.$textarea.getAttr('data-max-height')
+                        ? parseInt(this.$textarea.getAttr('data-max-height'), 10)
+                        : null);
 
                 let toolbars = properties.toolbars ?? [
                     'html',
@@ -439,6 +458,12 @@ namespace modules {
 
                         return false;
                     });
+
+                    editor.$el.css('minHeight', height + 'px');
+                    if (maxHeight !== null) {
+                        editor.$el.addClass('fr-scroll');
+                        editor.$el.css('maxHeight', maxHeight + 'px');
+                    }
 
                     if (typeof this.listeners.render == 'function') {
                         this.listeners.render(this);
