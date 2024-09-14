@@ -7,7 +7,7 @@
  * @file /modules/wysiwyg/dtos/EditorContent.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 5. 13.
+ * @modified 2024. 9. 14.
  */
 namespace modules\wysiwyg\dtos;
 class EditorContent
@@ -33,14 +33,14 @@ class EditorContent
     private \Component $_component;
 
     /**
-     * @var string $_position_type 콘텐츠가 작성된 위치종류
+     * @var ?string $_position_type 콘텐츠가 작성된 위치종류
      */
-    private string $_position_type;
+    private ?string $_position_type;
 
     /**
-     * @var string $_content 콘텐츠가 작성된 위치고유값
+     * @var string|int|null $_content 콘텐츠가 작성된 위치고유값
      */
-    private string|int $_position_id;
+    private string|int|null $_position_id;
 
     /**
      * @var string[] $_attachments 본문에 첨부된 첨부파일 고유값
@@ -52,11 +52,15 @@ class EditorContent
      *
      * @param object $origin 원본콘텐츠정보
      * @param \Component $component 콘텐츠를 생성한 컴포넌트객체
-     * @param string $position_type 콘텐츠위치종류
-     * @param string|int $position_id 콘텐츠위치고유값
+     * @param ?string $position_type 콘텐츠위치종류
+     * @param string|int|null $position_id 콘텐츠위치고유값
      */
-    public function __construct(object $origin, \Component $component, string $position_type, string|int $position_id)
-    {
+    public function __construct(
+        ?object $origin,
+        \Component $component,
+        ?string $position_type,
+        string|int|null $position_id
+    ) {
         $this->_origin = $origin;
         $this->_id = $origin->content_id ?? ($origin->id ?? \UUID::V4());
         $this->_component = $component;
@@ -103,7 +107,7 @@ class EditorContent
     /**
      * 본문 콘텐츠를 처리한다.
      */
-    private function parse()
+    private function parse(): void
     {
         $exists = [];
         $attachments = [];
@@ -249,6 +253,20 @@ class EditorContent
         }
 
         return $this->_attachments;
+    }
+
+    /**
+     * 에디터 내용이 비었는지 확인한다.
+     *
+     * @return bool $isEmpty
+     */
+    public function isEmpty(): bool
+    {
+        if (strlen(trim(strip_tags($this->getContent()))) == 0 && count($this->getAttachments()) == 0) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
