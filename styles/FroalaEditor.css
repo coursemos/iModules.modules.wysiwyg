@@ -7,7 +7,7 @@
  * @author froala_editor v2.9.5 (https://www.froala.com/wysiwyg-editor)
  * @license https://froala.com/wysiwyg-editor/terms/
  * @copyright 2014-2019 Froala Labs
- * @modified 2024. 5. 13.
+ * @modified 2024. 9. 14.
  */
 :root {
     --im-wysiwyg-toolbar-sticky-offset: 0;
@@ -25,6 +25,7 @@ div[data-module='wysiwyg'] {
     --im-wysiwyg-border-color-default: var(--im-color-background-300);
     --im-wysiwyg-border-color-focus: var(--im-color-accent-500);
     --im-wysiwyg-border-color-active: var(--im-color-accent-500);
+    --im-wysiwyg-border-color-error: var(--im-color-danger-500);
     --im-wysiwyg-border-radius: var(--im-component-border-radius);
 
     --im-wysiwyg-button-height: clamp(32px, 2.5rem, 48px);
@@ -1747,6 +1748,33 @@ div[data-module='wysiwyg'] {
                     display: none;
                 }
             }
+        }
+    }
+
+    > div[data-role='help'] {
+        display: block;
+        padding-block: var(--im-component-gap-small);
+        color: var(--im-color-foreground-300);
+        font-family: var(--im-component-font-family);
+        font-size: var(--im-component-font-size-small);
+        box-sizing: border-box;
+    }
+
+    &.error {
+        .fr-box {
+            border-color: var(--im-wysiwyg-border-color-error);
+        }
+
+        .fr-toolbar {
+            border-color: var(--im-wysiwyg-border-color-error);
+
+            &::before {
+                border-color: var(--im-wysiwyg-border-color-error);
+            }
+        }
+
+        > div[data-role='help'] {
+            color: var(--im-color-danger-500);
         }
     }
 }
