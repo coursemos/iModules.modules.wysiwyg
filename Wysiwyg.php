@@ -7,7 +7,7 @@
  * @file /modules/wysiwyg/Wysiwyg.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 20.
+ * @modified 2024. 9. 14.
  */
 namespace modules\wysiwyg;
 class Wysiwyg extends \Module
@@ -30,17 +30,17 @@ class Wysiwyg extends \Module
     /**
      * 원본 에디터 콘텐츠를 데이터베이스에 기록하기 위해 가공한다.
      *
-     * @param object $origin 원본콘텐츠
+     * @param ?object $origin 원본콘텐츠
      * @param \Component $component 콘텐츠를 생성한 컴포넌트객체
-     * @param string $position_type 콘텐츠위치종류
-     * @param string|int $position_id 콘텐츠위치고유값
+     * @param ?string $position_type 콘텐츠위치종류
+     * @param string|int|null $position_id 콘텐츠위치고유값
      * @return \modules\wysiwyg\dtos\EditorContent $content 에디터 콘텐츠 객체
      */
     public function getEditorContent(
-        object $origin,
+        ?object $origin,
         \Component $component,
-        string $position_type,
-        string|int $position_id
+        ?string $position_type = null,
+        string|int|null $position_id = null
     ): \modules\wysiwyg\dtos\EditorContent {
         return new \modules\wysiwyg\dtos\EditorContent($origin, $component, $position_type, $position_id);
     }
