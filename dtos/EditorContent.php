@@ -43,9 +43,14 @@ class EditorContent
     private string|int|null $_position_id;
 
     /**
-     * @var string[] $_attachments 본문에 첨부된 첨부파일 고유값
+     * @var string[] $_attachments 첨부된 첨부파일 고유값
      */
     private array $_attachments;
+
+    /**
+     * @var string[] $_inserts 첨부된 파일중 본문에 삽입된 첨부파일 고유값
+     */
+    private array $_inserts;
 
     /**
      * 에디터 콘텐츠 구조체를 정의한다.
@@ -111,6 +116,7 @@ class EditorContent
     {
         $exists = [];
         $attachments = [];
+        $inserts = [];
 
         $content = $this->_origin?->content ?? '';
 
@@ -128,6 +134,7 @@ class EditorContent
                 }
 
                 $attachments[] = $attachment_id;
+                $inserts[] = $attachment_id;
 
                 if (preg_match('/class="(.*?)"/i', $origin, $class) == true) {
                     $class = $class[1];
@@ -170,6 +177,7 @@ class EditorContent
                 }
 
                 $attachments[] = $attachment_id;
+                $inserts[] = $attachment_id;
 
                 if (preg_match('/class="(.*?)"/i', $origin, $class) == true) {
                     $class = $class[1];
@@ -212,6 +220,7 @@ class EditorContent
                 }
 
                 $attachments[] = $attachment_id;
+                $inserts[] = $attachment_id;
                 $insert = '<a data-attachment-id="' . $attachment_id . '"></a>';
                 $content = str_replace($origin, $insert, $content);
             }
@@ -225,6 +234,7 @@ class EditorContent
 
         $this->_content = $content;
         $this->_attachments = $attachments;
+        $this->_inserts = $inserts;
     }
 
     /**
@@ -244,25 +254,31 @@ class EditorContent
     /**
      * 본문 또는 업로더에 첨부된 첨부파일 고유값 배열을 가져온다.
      *
+     * @param bool $insert_only 내용에 포함된 첨부파일만 가져올지 여부
      * @return string[] $attachments
      */
-    public function getAttachments(): array
+    public function getAttachments(bool $insert_only = false): array
     {
-        if (isset($this->_attachments) == false) {
+        if (isset($this->_attachments) == false || isset($this->_inserts) == false) {
             $this->parse();
         }
 
-        return $this->_attachments;
+        if ($insert_only == true) {
+            return $this->_inserts;
+        } else {
+            return $this->_attachments;
+        }
     }
 
     /**
      * 에디터 내용이 비었는지 확인한다.
      *
+     * @param bool $insert_only 내용에 포함된 첨부파일만 확인할지 여부
      * @return bool $isEmpty
      */
-    public function isEmpty(): bool
+    public function isEmpty(bool $insert_only = false): bool
     {
-        if (strlen(trim(strip_tags($this->getContent()))) == 0 && count($this->getAttachments()) == 0) {
+        if (strlen(trim(strip_tags($this->getContent()))) == 0 && count($this->getAttachments($insert_only)) == 0) {
             return true;
         }
 
@@ -272,13 +288,27 @@ class EditorContent
     /**
      * 데이터베이스에 저장하기 위해 가공한 콘텐츠와 첨부파일목록을 JSON 으로 가져온다.
      *
+     * @param bool $insert_only 내용에 포함된 첨부파일만 가져올지 여부
+     * @param bool $remove_attachments 내용에 포함된 첨부파일만 가져올때 내용에 포함되지 않는 파일을 제거할지 여부
      * @return object $json
      */
-    public function getJson(): object
+    public function getJson(bool $insert_only = false, bool $remove_attachments = false): object
     {
         $json = new \stdClass();
         $json->content = $this->getContent();
-        $json->attachments = $this->getAttachments();
+        $json->attachments = $this->getAttachments($insert_only);
+
+        if ($insert_only == true && $remove_attachments == true) {
+            /**
+             * @var \modules\attachment\Attachment $mAttachment
+             */
+            $mAttachment = \Modules::get('attachment');
+            foreach ($this->getAttachments() as $attachment_id) {
+                if (in_array($attachment_id, $json->attachments) == false) {
+                    $mAttachment->deleteFile($attachment_id);
+                }
+            }
+        }
 
         return $json;
     }
