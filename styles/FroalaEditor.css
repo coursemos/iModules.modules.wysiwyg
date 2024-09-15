@@ -283,29 +283,13 @@ div[data-module='wysiwyg'] {
             }
         }
 
-        /*
-        textarea.fr-code {
-            display: none;
-            width: 100%;
-            resize: none;
-            -moz-resize: none;
-            -webkit-resize: none;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-sizing: border-box;
-            border: 0;
-            padding: 10px;
-            margin: 0;
-            font-family: 'Courier New', monospace;
-            font-size: var(--im-wysiwyg-font-size);
-            background: var(--im-wysiwyg-background-default);
-            color: var(--im-wysiwyg-color-default);
-            outline: 0;
-        }
-        */
-
         .CodeMirror {
             display: none;
+
+            textarea {
+                display: block;
+                opacity: 1;
+            }
         }
 
         &.fr-code-view {
@@ -341,7 +325,7 @@ div[data-module='wysiwyg'] {
                     border-radius: 0;
                     border-width: 0;
                     background: transparent;
-                    font-family: inherit;
+                    font-family: 'Nanum Gothic Coding' monospace;
                     font-size: inherit;
                     margin: 0;
                     white-space: pre;
@@ -400,6 +384,7 @@ div[data-module='wysiwyg'] {
                 white-space: nowrap;
                 -moz-box-sizing: content-box;
                 box-sizing: content-box;
+                font-family: monospace !important;
             }
             .CodeMirror-guttermarker {
                 color: var(--im-wysiwyg-color-default);

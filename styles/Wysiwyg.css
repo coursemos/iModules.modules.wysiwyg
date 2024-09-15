@@ -43,9 +43,12 @@ div[data-module='wysiwyg'] div.fr-box,
 div[data-role='wysiwyg-content'] {
     background: var(--im-wysiwyg-content-background-default);
     color: var(--im-color-foreground-500);
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
+
+    &[data-role='wysiwyg-content'] {
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+    }
 
     h1,
     h2,
