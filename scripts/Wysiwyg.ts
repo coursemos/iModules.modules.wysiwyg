@@ -148,15 +148,15 @@ namespace modules {
                     'emoticons',
                 ];
 
-                if (imageUpload == false) {
+                if (imageUpload == false && toolbars.indexOf('insertImage') >= 0) {
                     toolbars.splice(toolbars.indexOf('insertImage'), 1);
                 }
 
-                if (fileUpload == false) {
+                if (fileUpload == false && toolbars.indexOf('insertFile') >= 0) {
                     toolbars.splice(toolbars.indexOf('insertFile'), 1);
                 }
 
-                if (videoUpload == false) {
+                if (videoUpload == false && toolbars.indexOf('insertVideo') >= 0) {
                     toolbars.splice(toolbars.indexOf('insertVideo'), 1);
                 }
 
@@ -700,6 +700,58 @@ namespace modules {
                     const editor = $editor.data('froala.editor');
                     editor.selection.setAtEnd(editor.$el.get(0));
                     editor.selection.restore();
+                });
+            }
+
+            /**
+             * 활성화여부를 지정한다.
+             *
+             * @param {boolean} disabled - 비활성화여부
+             */
+            setDisabled(disabled: boolean): void {
+                this.renderer.then(($editor) => {
+                    if (disabled == true) {
+                        $editor.froalaEditor('edit.off');
+                    }
+                });
+            }
+
+            /**
+             * 에디터 최소높이를 지정한다.
+             *
+             * @param {number} height - 에디터최소높이
+             * @param {boolean} includedToolbar - 툴바높이를 포함하여 계산할지 여부
+             */
+            setHeight(height: number, includedToolbar: boolean): void {
+                console.log('setHiehgt');
+                this.renderer.then(($editor) => {
+                    const editor = $editor.data('froala.editor');
+                    if (includedToolbar == true) {
+                        height = height - editor.$tb.outerHeight();
+                    }
+                    editor.$el.css('minHeight', height + 'px');
+                });
+            }
+
+            /**
+             * 에디터 최소높이를 지정한다.
+             *
+             * @param {number} maxHeight - 에디터최소높이
+             * @param {boolean} includedToolbar - 툴바높이를 포함하여 계산할지 여부
+             */
+            setMaxHeight(maxHeight: number, includedToolbar: boolean): void {
+                this.renderer.then(($editor) => {
+                    const editor = $editor.data('froala.editor');
+                    if (maxHeight === null) {
+                        editor.$el.css('maxHeight', '');
+                        editor.$el.removeClass('fr-scroll');
+                    } else {
+                        if (includedToolbar == true) {
+                            maxHeight = maxHeight - editor.$tb.outerHeight();
+                        }
+                        editor.$el.css('maxHeight', maxHeight + 'px');
+                        editor.$el.addClass('fr-scroll');
+                    }
                 });
             }
 
