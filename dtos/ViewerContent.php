@@ -41,6 +41,8 @@ class ViewerContent
      * 에디터 콘텐츠 구조체를 정의한다.
      *
      * @param object|string $origin 데이터베이스에 저장된 콘텐츠 원본
+     * @param bool $is_purifier 태그필터여부
+     * @param bool $is_full_url 전체 URL 반환여부
      */
     public function __construct(object|string $origin, bool $is_purifier = true, bool $is_full_url = false)
     {
@@ -63,7 +65,7 @@ class ViewerContent
     /**
      * 본문 콘텐츠를 처리한다.
      */
-    private function parse()
+    private function parse(): void
     {
         /**
          * @var \modules\attachment\Attachment $mAttachment
@@ -258,14 +260,14 @@ class ViewerContent
     }
 
     /**
-     * 데이터베이스에 저장하기 위해 가공한 콘텐츠와 첨부파일목록을 JSON 으로 가져온다.
+     * 화면출력을 위한 콘텐츠와 첨부파일목록을 JSON 으로 가져온다.
      *
      * @return object $json
      */
     public function getJson(): object
     {
         $json = new \stdClass();
-        $json->content = $this->getContent(false, false);
+        $json->content = $this->getContent();
         $json->attachments = $this->getAttachments();
 
         return $json;
