@@ -723,7 +723,6 @@ namespace modules {
              * @param {boolean} includedToolbar - 툴바높이를 포함하여 계산할지 여부
              */
             setHeight(height: number, includedToolbar: boolean): void {
-                console.log('setHiehgt');
                 this.renderer.then(($editor) => {
                     const editor = $editor.data('froala.editor');
                     if (includedToolbar == true) {
