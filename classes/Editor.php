@@ -220,7 +220,7 @@ class Editor
     public function setUploader(?\modules\attachment\Uploader $uploader = null): \modules\wysiwyg\Editor
     {
         $this->_uploader = $uploader;
-        $uploader->setRender(false);
+        $uploader?->setRender(false);
         return $this;
     }
 
