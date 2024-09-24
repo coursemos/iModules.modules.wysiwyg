@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 12.
+ * @modified 2024. 9. 25.
  */
 namespace modules {
     export namespace wysiwyg {
@@ -108,7 +108,10 @@ namespace modules {
                 this.$textarea = $textarea;
                 properties ??= {};
 
-                this.id = this.$textarea.getAttr('data-id');
+                this.id = this.$textarea.getAttr('data-id') ?? '';
+                if (this.id.length == 0) {
+                    this.id = properties.id ?? 'Wysiwyg-' + new Date().getTime();
+                }
                 this.listeners = properties.listeners ?? {};
 
                 const imageUpload = properties.imageUpload ?? this.$textarea.getAttr('data-image-upload') === 'true';
@@ -160,7 +163,7 @@ namespace modules {
                     toolbars.splice(toolbars.indexOf('insertVideo'), 1);
                 }
 
-                properties.scrollableContainer = 'div[data-module=wysiwyg]';
+                properties.scrollableContainer = 'div[data-module=wysiwyg][data-id="' + this.id + '"]';
                 properties.tooltips = false;
                 properties.toolbarSticky = false;
                 properties.toolbarButtons =
@@ -688,7 +691,7 @@ namespace modules {
             setValue(data: { content?: string; attachments?: string[] } = null): void {
                 this.renderer.then(($editor) => {
                     $editor.froalaEditor('html.set', data?.content ?? '');
-                    this.uploader.setValue(data?.attachments ?? []);
+                    this.uploader?.setValue(data?.attachments ?? []);
                 });
             }
 

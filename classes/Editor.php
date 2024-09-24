@@ -7,7 +7,7 @@
  * @file /modules/wysiwyg/classes/Editor.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 14.
+ * @modified 2024. 9. 25.
  */
 namespace modules\wysiwyg;
 class Editor
@@ -296,6 +296,7 @@ class Editor
                 'data-role' => 'module',
                 'data-module' => 'wysiwyg',
                 'data-field' => 'editor',
+                'data-id' => $this->_id,
                 'data-name' => $this->_name,
             ],
             $textarea
