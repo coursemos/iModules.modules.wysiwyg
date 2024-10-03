@@ -7,7 +7,7 @@
  * @file /modules/wysiwyg/dtos/ViewerContent.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 5. 13.
+ * @modified 2024. 10. 3.
  */
 namespace modules\wysiwyg\dtos;
 class ViewerContent
@@ -100,6 +100,10 @@ class ViewerContent
                     $style = $style[1];
                 } else {
                     $style = null;
+                }
+
+                if ($this->_is_purifier == true) {
+                    $style = $attachment->getStyle($style);
                 }
 
                 $insert = \Html::element('img', [
