@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 25.
+ * @modified 2024. 10. 5.
  */
 namespace modules {
     export namespace wysiwyg {
@@ -97,6 +97,7 @@ namespace modules {
             uploader: modules.attachment.Uploader;
             renderer: Promise<any>;
             listeners: { [name: string]: Function };
+            inputEvent: Promise<any> = null;
 
             /**
              * <textarea> DOM 객체를 이용하여 에디터를 활성화한다.
@@ -387,6 +388,20 @@ namespace modules {
                         if ($uploading.length == 0) {
                             this.editor.get().edit.on();
                         }
+                    });
+
+                    $editor.on('froalaEditor.input', (e: any) => {
+                        if (this.inputEvent === null) {
+                            this.inputEvent = this.onEdit(e);
+                        }
+                    });
+
+                    $editor.on('froalaEditor.focus', (e: any) => {
+                        Html.el(e.currentTarget).trigger('editorFocus');
+                    });
+
+                    $editor.on('froalaEditor.blur', (e: any) => {
+                        Html.el(e.currentTarget).trigger('editorBlur');
                     });
 
                     $editor.on(
@@ -768,6 +783,21 @@ namespace modules {
                         .replace(/<\/?(p|br|span)[^>]*>/gi, '')
                         .trim().length == 0
                 );
+            }
+
+            /**
+             * 부하를 줄이기 위해 10초 간격으로 변경 이벤트를 트리거한다.
+             *
+             * @param {InputEvent} e
+             */
+            async onEdit(e: InputEvent): Promise<void> {
+                if (e.currentTarget) {
+                    Html.el(e.currentTarget).trigger('edit');
+                }
+
+                await iModules.sleep(10000);
+
+                this.inputEvent = null;
             }
         }
     }

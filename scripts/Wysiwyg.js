@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/Wysiwyg.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 25.
+ * @modified 2024. 10. 5.
  */
 var modules;
 (function (modules) {
@@ -51,6 +51,7 @@ var modules;
             uploader;
             renderer;
             listeners;
+            inputEvent = null;
             /**
              * <textarea> DOM 객체를 이용하여 에디터를 활성화한다.
              *
@@ -316,6 +317,17 @@ var modules;
                         if ($uploading.length == 0) {
                             this.editor.get().edit.on();
                         }
+                    });
+                    $editor.on('froalaEditor.input', (e) => {
+                        if (this.inputEvent === null) {
+                            this.inputEvent = this.onEdit(e);
+                        }
+                    });
+                    $editor.on('froalaEditor.focus', (e) => {
+                        Html.el(e.currentTarget).trigger('editorFocus');
+                    });
+                    $editor.on('froalaEditor.blur', (e) => {
+                        Html.el(e.currentTarget).trigger('editorBlur');
                     });
                     $editor.on('froalaEditor.image.beforePasteUpload', (_e, _editor, img) => {
                         img.remove();
@@ -637,6 +649,18 @@ var modules;
                 return (this.getContent()
                     .replace(/<\/?(p|br|span)[^>]*>/gi, '')
                     .trim().length == 0);
+            }
+            /**
+             * 부하를 줄이기 위해 10초 간격으로 변경 이벤트를 트리거한다.
+             *
+             * @param {InputEvent} e
+             */
+            async onEdit(e) {
+                if (e.currentTarget) {
+                    Html.el(e.currentTarget).trigger('edit');
+                }
+                await iModules.sleep(10000);
+                this.inputEvent = null;
             }
         }
         wysiwyg.Editor = Editor;
