@@ -786,16 +786,16 @@ namespace modules {
             }
 
             /**
-             * 부하를 줄이기 위해 10초 간격으로 변경 이벤트를 트리거한다.
+             * 부하를 줄이기 위해 5초 간격으로 변경 이벤트를 트리거한다.
              *
              * @param {InputEvent} e
              */
             async onEdit(e: InputEvent): Promise<void> {
+                await iModules.sleep(5000);
+
                 if (e.currentTarget) {
                     Html.el(e.currentTarget).trigger('edit');
                 }
-
-                await iModules.sleep(10000);
 
                 this.inputEvent = null;
             }
