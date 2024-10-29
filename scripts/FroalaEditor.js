@@ -6,7 +6,7 @@
  * @file /modules/wysiwyg/scripts/FroalaEditor.js
  * @author Arzz <arzz@arzz.com>
  * @license copyright
- * @modified 2024. 9. 12.
+ * @modified 2024. 10. 29.
  */
 var modules;
 (function (modules) {
@@ -315,7 +315,7 @@ var modules;
                 if (this.textarea instanceof HTMLTextAreaElement) {
                     const $ = modules.wysiwyg.FroalaEditor.init();
                     $.FE.LANGUAGE[iModules.getLanguage()] = {
-                        translation: await Modules.get('wysiwyg').getText('editor')
+                        translation: await Modules.get('wysiwyg').getTexts('editor')
                     };
                     this.options.language = iModules.getLanguage();
                     this.options.key = '1G4C2A10A6E5B4gC3E3G3C2B7D5B3F4D2C1zHMDUGENKACTMXQL==';
