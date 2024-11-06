@@ -3,11 +3,11 @@
  *
  * 위지윅에디터를 위한 스타일시트를 정의한다.
  *
- * @file /modules/wysiwyg/styles/Editor.scss
+ * @file /modules/wysiwyg/styles/FroalaEditor.css
  * @author froala_editor v2.9.5 (https://www.froala.com/wysiwyg-editor)
  * @license https://froala.com/wysiwyg-editor/terms/
  * @copyright 2014-2019 Froala Labs
- * @modified 2024. 9. 14.
+ * @modified 2024. 11. 5.
  */
 :root {
     --im-wysiwyg-toolbar-sticky-offset: 0;

@@ -3,10 +3,10 @@
  *
  * 위지윅에디터모듈 스타일시트를 정의한다.
  *
- * @file /modules/wysiwyg/scripts/Wysiwyg.ts
+ * @file /modules/wysiwyg/styles/Wysiwyg.css
  * @author Arzz <arzz@arzz.com>
- * @license MIT License
- * @modified 2024. 5. 13.
+ * @license MIT License 
+ * @modified 2024. 11. 5.
  */
 div[data-module='wysiwyg'] {
     --im-wysiwyg-content-background-default: var(--im-color-background-500);
