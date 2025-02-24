@@ -66,6 +66,7 @@ div[data-module='wysiwyg'] {
         background: var(--im-wysiwyg-content-background-default);
         color: var(--im-wysiwyg-content-color-default);
         box-sizing: border-box;
+        overflow: hidden;
 
         &:has(*:focus) {
             border-color: var(--im-wysiwyg-border-color-focus);
