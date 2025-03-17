@@ -481,7 +481,7 @@ div.atwho-container {
     }
     .atwho-view .cur strong {
         color: #fff;
-        font: 700;
+        font-weight: 700;
     }
     .atwho-view ul {
         list-style: none;
