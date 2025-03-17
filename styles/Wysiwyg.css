@@ -167,7 +167,7 @@ div[data-role='wysiwyg-content'] {
     }
 
     a {
-        color: var(--im-wysiwyg-content-link-color);
+        color: var(--aui-color-accent-500);
         text-decoration: none;
     }
 
